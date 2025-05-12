@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+
+<configuration scan="true" xmlns:xsl="http://java.sun.com/xml/ns/j2ee">
+    <import class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"/>
+    <import class="ch.qos.logback.core.rolling.RollingFileAppender"/>
+    <import class="ch.qos.logback.core.ConsoleAppender"/>
+    <!--      -->
+    <xsl:variable name="qname" select="expression">
+        <!-- Содержимое: шаблон -->
+    </xsl:variable>
+
+
+    <!-- ************************************************ MAIN_LOGGER ****************************************************-->
+
+    <appender name="FILE1" class="RollingFileAppender">
+        <file>/home/root/chargingStation/logger/logs/main_logs/Main_logs.log</file>
+        <append>true</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>/home/root/chargingStation/logger/logs/main_logs/Main_logs.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ConsoleAppender">
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="MAIN_LOGGER" level="INFO">
+        <appender-ref ref="FILE1"/>
+<!--        <appender-ref ref="STDOUT"/>-->
+    </logger>
+
+
+    <!-- ************************************************ RPC_SERVER ****************************************************-->
+
+
+    <appender name="FILE2" class="RollingFileAppender">
+        <file>/home/root/chargingStation/logger/logs/rpcServer_logs/RpcServer_logs.log</file>
+        <append>true</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>/home/root/chargingStation/logger/logs/rpcServer_logs/RpcServer_logs.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>4</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ConsoleAppender">
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--  GBR RECEIVE IS A NAME FROM LogHandler -->
+    <logger name="RPC_SERVER" level="INFO">
+        <appender-ref ref="FILE2"/>
+<!--        <appender-ref ref="STDOUT"/>-->
+    </logger>
+
+<!--************************************************ Energy_meter_Process ****************************************-->
+    <appender name="FILE3" class="RollingFileAppender">
+        <file>/home/root/chargingStation/logger/logs/energyMeterProcess_logs/EnergyMeterProcess_logs.log</file>
+        <append>true</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>/home/root/chargingStation/logger/logs/energyMeterProcess_logs/EnergyMeterProcess_logs.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>4</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ConsoleAppender">
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--  GBR RECEIVE IS A NAME FROM LogHandler -->
+    <logger name="ENERGY_METER_PROCESS" level="INFO">
+        <appender-ref ref="FILE3"/>
+<!--        <appender-ref ref="STDOUT"/>-->
+    </logger>
+
+
+    <!--************************************************ Mode3Controller ****************************************-->
+    <appender name="FILE4" class="RollingFileAppender">
+        <file>/home/root/chargingStation/logger/logs/mode3Controller_logs/Mode3Controller_logs.log</file>
+        <append>true</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>/home/root/chargingStation/logger/logs/mode3Controller_logs/Mode3Controller_logs.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>4</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ConsoleAppender">
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--  GBR RECEIVE IS A NAME FROM LogHandler -->
+    <logger name="MODE3_SEND" level="INFO">
+        <appender-ref ref="FILE4"/>
+<!--        <appender-ref ref="STDOUT"/>-->
+    </logger>
+
+    <!--************************************************ OCPP_HANDLER ****************************************-->
+    <appender name="FILE5" class="RollingFileAppender">
+        <file>/home/root/chargingStation/logger/logs/ocpp_logs/OCPP_HANDLER_logs.log</file>
+        <append>true</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>/home/root/chargingStation/logger/logs/ocpp_logs/OCPP_HANDLER_logs.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>4</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ConsoleAppender">
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS, Europe/Moscow} [%-4level] %logger --%msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--  GBR RECEIVE IS A NAME FROM LogHandler -->
+    <logger name="OCPP_LOGGER" level="INFO">
+        <appender-ref ref="FILE5"/>
+        <!--        <appender-ref ref="STDOUT"/>-->
+    </logger>
+
+
+</configuration>
+
+

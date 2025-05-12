@@ -1,0 +1,9 @@
+[Unit]
+Description=start charge station
+After=network.target
+[Service]
+ExecStart=/home/root/chargingStation/scripts/start_programm.sh
+Restart=on-failure
+RestartSec=10s
+[Install]
+WantedBy=multi-user.target
