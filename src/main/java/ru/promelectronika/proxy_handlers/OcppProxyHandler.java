@@ -96,13 +96,10 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
         System.out.println("CAME TO CERTAIN TRANSACTION FINISH METHOD....");
         try {
             if (TransactionsQueue.queue != null && !TransactionsQueue.queue.isEmpty()) {
-                ColorTuner.purpleBackgroundBlackText("finishCertainTransaction OCppProxyHandler________________________________");
                 TransactionsQueue.queue.removeIf(transactionInfo ->
                         transactionInfo.getRequest().getEvse().getId() == dto.evseId() &&
                                 transactionInfo.getRequest().getEvse().getConnectorId() == dto.connectorId()
                 );
-            }else {
-                ColorTuner.purpleBackgroundBlackText("CAN NOT!!!!   finishCertainTransaction OCppProxyHandler_" + TransactionsQueue.queue);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,10 +124,11 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
                             System.out.println("EXCEPTION: " + e);
                         }
                     }
-                    case 1 -> { // CONNECTED
+                    case 1 -> {
                         // OCPP CONNECTORS STATE NOTIFYING
                         StatusNotificationRequest request = RequestBuilder.buildStatusNotificationRequest(ConnectorStatusEnumType.Occupied, dto.evseId(), dto.connectorId());
                         chargePointOcpp.sendStatusNotificationRequest(request);
+
                         // OCPP TRANSACTION BEGINNING
                         String transactionId = "" + ++transactionIDsCounter;
                         TransactionEventRequest transactionRequest = RequestBuilder.buildTransactionEventRequest(TransactionEventEnumType.Started, TriggerReasonEnumType.CablePluggedIn,
@@ -143,12 +141,11 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
                         ColorTuner.printGreenText("TRANSACTIONS   : " + TransactionsQueue.queue);
                     }
                     case 5 -> {
-                        ColorTuner.printGreenText("TRANSACTIONS   : " + TransactionsQueue.queue);
                         TransactionEventRequest request = RequestBuilder.buildLocalStopTransactionEventRequest();
                         ColorTuner.redBackgroundBlackText(request);
                         chargePointOcpp.sendStopTransactionRequest(request);
                         finishCertainTransaction(dto);
-//                        finishTransaction(request);
+                        ColorTuner.printGreenText("TRANSACTIONS   : " + TransactionsQueue.queue);
                         LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: EV CHARGING IS COMPLETE!");
 
                     }
@@ -180,7 +177,7 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
     private void finishTransaction(TransactionEventRequest request) {
         if (!TransactionsQueue.queue.isEmpty()) {
             TransactionsQueue.queue.removeFirst();
-            System.out.println("Size: " + TransactionsQueue.queue.size());
+            LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: TRANSACTION FINISHED: " + TransactionsQueue.queue);
             chargePointOcpp.sendTransactionEventRequest(request);
         }
     }

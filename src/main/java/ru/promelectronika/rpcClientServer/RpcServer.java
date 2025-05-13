@@ -9,7 +9,6 @@ import org.msgpack.value.*;
 import ru.promelectronika.util_stuff.ColorTuner;
 import ru.promelectronika.dataBases.ControllersParamsDataBase;
 import ru.promelectronika.dataBases.CtrlEnMeterParamsDataBase;
-import ru.promelectronika.util_stuff.Configs;
 import ru.promelectronika.enums.MessageEnumType;
 import ru.promelectronika.logHandler.LogHandler;
 
@@ -56,25 +55,16 @@ public class RpcServer {
         Iterator<SelectionKey> selectionKeyIterator = selectionKeys.iterator();
 
         while (selectionKeyIterator.hasNext()) {
-//            if(client!=null) System.out.println(client.socket().isClosed());
-
             SelectionKey aKey = selectionKeyIterator.next();
             if (aKey.isAcceptable()) {
                 accept();
-            }
-            if (aKey.isReadable()) {
+            } else if (aKey.isReadable()) {
                 try {
-                    // todo add some processing logics
                     readMessage((SocketChannel) aKey.channel());
-                } catch (Exception e) {
-                    aKey.cancel();
+                } catch (RuntimeException e) {
+//                    aKey.cancel();
                     aKey.channel().close();
-//                    client.close();
-
-//                    client.close();
-//                    continue;
-//                    e.printStackTrace();
-//                    ColorTuner.redBackgroundBlackText("Rpc_Client CLOSED!! : is open: " + client.isOpen() + " isClosed: " + client.socket().isClosed());
+                    System.out.println("Execption " + e);
                 }
             }
             selectionKeyIterator.remove();

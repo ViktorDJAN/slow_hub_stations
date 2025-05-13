@@ -19,6 +19,7 @@ import ru.promelectronika.ocpp_charge_point.featureProfiles.core.client_requests
 import ru.promelectronika.ocpp_charge_point.featureProfiles.core.СsmsRequestsHandler;
 import ru.promelectronika.ocpp_charge_point.featureProfiles.remoteTrigger.TriggerConfirmationEvents;
 import ru.promelectronika.ocpp_charge_point.featureProfiles.remoteTrigger.confirmation.TriggerMessage;
+import ru.promelectronika.util_stuff.Configs2;
 
 import java.util.function.BooleanSupplier;
 
@@ -49,13 +50,13 @@ public class ChargePointOcpp implements CoreOperationEvents, TriggerConfirmation
                 if (isClosedClient.getAsBoolean()) {
                     client.connect(serverAddress, new ClientEventHandler(this));
                     System.out.println("CLIENT_OCPP CONNECTED: " + isConnected );
-                    BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, OcppConfigs.CS_MODEL, OcppConfigs.VENDOR_NAME);
+                    BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, Configs2.cs_model, Configs2.vendor_name);
                     sendBootNotificationRequest(request);
                 }
             }
             if (isClosedClient.getAsBoolean()) {
                 client.connect(serverAddress, new ClientEventHandler(this));
-                BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, OcppConfigs.CS_MODEL, OcppConfigs.VENDOR_NAME);
+                BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, Configs2.cs_model, Configs2.vendor_name);
                 sendBootNotificationRequest(request);
             }
         } catch (Exception e) {

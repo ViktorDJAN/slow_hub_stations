@@ -5,7 +5,7 @@ import functional.data_bases.MeasurementsBase;
 import functional.dto.MeasurementDto;
 import ru.promelectronika.util_stuff.ColorKind;
 import ru.promelectronika.util_stuff.ColorTuner;
-import ru.promelectronika.util_stuff.Configs;
+import ru.promelectronika.util_stuff.Configs2;
 import ru.promelectronika.util_stuff.LoggerPrinter;
 import ru.promelectronika.dataBases.CtrlEnMeterParamsDataBase;
 import ru.promelectronika.dataBases.InnerEnMeterDtoDataBase;
@@ -17,7 +17,6 @@ import ru.promelectronika.enums.*;
 
 import ru.promelectronika.logHandler.LogHandler;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public class CalculatingAvailableParamsProcess implements Runnable {
                         Optional<Double> phaseU = Optional.of(getVoltageMap().values().stream()
                                 .filter(voltage -> voltage > 198)
                                 .findAny().orElse(0.0));
-                        availableHomePower = Configs.accessible_house_power - calculatePresentConsumingPowerONE_Phase();
+                        availableHomePower = Configs2.accessible_house_power - calculatePresentConsumingPowerONE_Phase();
 
                         outerEnMeterDto.setPhaseCurrent(Math.floor(phaseI)); // CURRENT ON PHASE
                         outerEnMeterDto.setPhaseVoltage(phaseU.get());// VOLTAGE ON PHASE
@@ -97,7 +96,7 @@ public class CalculatingAvailableParamsProcess implements Runnable {
                     phaseI = Math.round(getAvailablePhaseCurrent_THREEPhaseNetwork());
                     double averageVoltage = (getVoltageMap().values().stream()
                             .reduce((double) 0, Double::sum)) / 3;
-                    availableHomePower = Configs.accessible_house_power - calculatePresentConsumingPowerTHREE_Phases();
+                    availableHomePower = Configs2.accessible_house_power - calculatePresentConsumingPowerTHREE_Phases();
 
                     outerEnMeterDto.setPhaseCurrent(phaseI);
                     outerEnMeterDto.setPhaseVoltage(averageVoltage);
@@ -240,7 +239,7 @@ public class CalculatingAvailableParamsProcess implements Runnable {
 
 
     public double getAvailablePhaseCurrent_ONEPhaseNetwork() {
-        double availablePower = Configs.accessible_house_power - calculatePresentConsumingPowerONE_Phase();
+        double availablePower = Configs2.accessible_house_power - calculatePresentConsumingPowerONE_Phase();
         double phaseI;
         Optional<Double> voltageOnePhase = Optional.of(getVoltageMap().values().stream()
                 .filter(voltage -> voltage > 198)
@@ -263,7 +262,7 @@ public class CalculatingAvailableParamsProcess implements Runnable {
     }
 
     public double getAvailablePhaseCurrent_THREEPhaseNetwork() {
-        double availablePower = Configs.accessible_house_power - calculatePresentConsumingPowerTHREE_Phases();
+        double availablePower = Configs2.accessible_house_power - calculatePresentConsumingPowerTHREE_Phases();
         double averageVoltage = (getVoltageMap().values().stream().reduce((double) 0, Double::sum)) / 3;
         double phaseI;
 

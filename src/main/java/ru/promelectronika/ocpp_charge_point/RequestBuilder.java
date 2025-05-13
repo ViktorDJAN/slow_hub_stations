@@ -64,24 +64,11 @@ public class RequestBuilder {
     }
 
 
-//        TransactionsQueue.queue.peekFirst().setRemoteId(remoteId);
-//        TransactionInfo transactionInfo = TransactionsQueue.queue.peekLast();
-
-//        var transactionType = new TransactionType(transactionInfo.getTransactionId()); // required
-//        transactionType.setChargingState(ChargingStateEnumType.Charging);
-//        transactionType.setRemoteStartId(remoteId);
-//
-//        var evseType = new EVSEType(evseId);
-//        var request = new TransactionEventRequest(TransactionEventEnumType.Updated, ZonedDateTime.now(), TriggerReasonEnumType.RemoteStart,
-//                TransactionInfo.seqNo++, transactionType);
-//        request.setIdToken(idTokenType);
-//        request.setEvse(evseType);
-//        return request;
 
 
     public static TransactionEventRequest buildLocalStopTransactionEventRequest() {
         if (TransactionsQueue.queue.peekFirst() == null) {
-            ColorTuner.printBlackText("REQUEST_BUILDER: " + TransactionsQueue.queue.peekFirst());
+            ColorTuner.printBlackText("TransactionsQueue: " + TransactionsQueue.queue.peekFirst());
             return null;
         }
         TransactionInfo info = TransactionsQueue.queue.peekFirst();
@@ -91,7 +78,6 @@ public class RequestBuilder {
         transType.setRemoteStartId(info.getRemoteId());
         TransactionEventRequest request = new TransactionEventRequest(TransactionEventEnumType.Ended,
                 ZonedDateTime.now(), TriggerReasonEnumType.AbnormalCondition, info.getRequest().getSeqNo(), transType);
-        System.out.println("TRANSACTION WAS STOPPED BECAUSE OF EMERGENCY BUTTON" + TransactionsQueue.queue);
         return request;
     }
 
@@ -113,13 +99,10 @@ public class RequestBuilder {
             }
         }
         return null;
-//        TransactionInfo info = TransactionsQueue.queue.peekFirst();
-
-
     }
 
     public static TransactionEventRequest buildTransactionEventRequestForMeterValueSending(MeterValuesDto valuesDto) {
-        // todo use BuilderSupplier // FILTRATION
+
         if (!TransactionsQueue.queue.isEmpty()) {
             for (TransactionInfo info : TransactionsQueue.queue) {
                 if (info.getRequest().getEvse().getId().equals(valuesDto.evseId()) && info.isStarted()) {
@@ -142,7 +125,6 @@ public class RequestBuilder {
                     request.setIdToken(info.getRequest().getIdToken());
                     request.setMeterValue(List.of(meterValueType));
                     return request;
-
                 }
             }
         }

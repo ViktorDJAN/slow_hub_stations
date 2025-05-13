@@ -49,17 +49,11 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
     @Override
     public void run() {
-        try {
             initializePowerOnControllerState();
-
             while (true) {
                 sendCommand(checkControllerStateChanges());
                 processReceivedCommand(receiveCommand());
-
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -69,20 +63,18 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
         try {
             if (receivedCommand != null) {
                 if (receivedCommand.data() instanceof EvseDto dto) {
-                    EvseDto evseDto = dto;
                     if (dto.connectorState() != null) connectorCurrentState = dto.connectorState();
 
-
                     if (receivedCommand.command() == (ProxyCommandsEnumType.START_POWER_SUPPLY.getValue())
-                            && evseDto.evseId().equals(station.getEvseId())) {
-                        startCharging(evseDto.evseId());
+                            && dto.evseId().equals(station.getEvseId())) {
+                        startCharging(dto.evseId());
                         LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND,
                                 stationHandlerID + ": STATION_PROXY_HANDLER: START_POWER_SUPPLY!");
                     }
 
 
                     if (receivedCommand.command() == (ProxyCommandsEnumType.STOP_POWER_SUPPLY.getValue())
-                            && evseDto.evseId().equals(station.getEvseId())) {
+                            && dto.evseId().equals(station.getEvseId())) {
                         terminateSendingMetricsFutures();
                         LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND,
                                 stationHandlerID + ": STATION_PROXY_HANDLER: STOP_POWER_SUPPLY!  transaction_queue_size: " + TransactionsQueue.queue.size());
@@ -111,9 +103,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
         BooleanSupplier isTransactionNotFinished = () -> !TransactionsQueue.queue.isEmpty();
 
         Integer controllerId = Integer.parseInt(station.getMode3ClientAddress().substring(10));
-
         if (ControllersParamsDataBase.map.containsKey(controllerId)) {
-
             ControllerParamsDto paramsDto = ControllersParamsDataBase.map.get(controllerId);
             Integer connectorState = paramsDto.getChargeState();
             connectorPreviousState = connectorCurrentState;
@@ -185,7 +175,6 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
                         sendRpcSetLimitFuture = sendRpcSetCurrentLimits();
                     }
 
-
                     ColorTuner.whiteBackgroundRedText(stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE   STARTED: IS_DONE: " + sendMetersValueFuture.isDone() + " " + sendMetersValueFuture.hashCode());
                     ColorTuner.whiteBackgroundRedText(stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS   STARTED: IS_DONE: " + sendRpcSetLimitFuture.isDone() + " " + sendRpcSetLimitFuture.hashCode());
 
@@ -197,7 +186,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
 
     public void terminateSendingMetricsFutures() {
-        System.out.println("Came to terminte sendind metrics");
+        System.out.println("Came: terminate Sending Metrics Futures");
         try {
             if (isMeterValueFutureAlive.getAsBoolean() && isSendRpcSetLimitFutureAlive.getAsBoolean()) {
                 sendMetersValueFuture.cancel(true);
@@ -205,7 +194,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
                 station.getMode3Client().rpcUserStop();
                 Thread.sleep(100);
                 station.getMode3Client().rpcUserStop();
-                ColorTuner.greenBackgroundBlackText("USER_STOP_____SENT_____________________________________________________________" + station.getMode3Client().getSocket().getRemoteSocketAddress());
+                ColorTuner.greenBackgroundBlackText("USER_STOP_SENT___________________________________________" + station.getMode3Client().getSocket().getRemoteSocketAddress());
 
                 ColorTuner.whiteBackgroundRedText(stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE IS CANCELLED: " + sendMetersValueFuture.isCancelled() + sendMetersValueFuture.hashCode());
                 ColorTuner.whiteBackgroundRedText(stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS IS CANCELLED: " + sendRpcSetLimitFuture.isCancelled() + sendRpcSetLimitFuture.hashCode());
