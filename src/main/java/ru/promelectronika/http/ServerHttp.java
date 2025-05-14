@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.promelectronika.dto.records.ConfigsDto;
+import ru.promelectronika.logHandler.LogHandler;
 import ru.promelectronika.util_stuff.ColorTuner;
 import ru.promelectronika.util_stuff.JsonFileCreator;
 
@@ -40,18 +41,10 @@ public class ServerHttp {
 
 
         @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String path = exchange.getRequestURI().getPath();
-            path = path.equals("/") ? "/index.html" : path;
-
+        public void handle(HttpExchange exchange)   {
             try {
                 byte[] content = Files.readAllBytes(Paths.get("/home/root/chargingStation/index/index.html"));
-
-                // Set content type based on file extension
                 String contentType = "text/html";
-                if (path.endsWith(".css")) contentType = "text/css";
-                if (path.endsWith(".js")) contentType = "application/javascript";
-
                 exchange.getResponseHeaders().set("Content-Type", contentType);
                 exchange.sendResponseHeaders(200, content.length);
                 exchange.getResponseBody().write(content);
@@ -64,19 +57,7 @@ public class ServerHttp {
         }
     }
 
-    private static String getContentType(Path filePath) {
-        String fileName = filePath.getFileName().toString();
 
-        if (fileName.endsWith(".html")) return "text/html";
-        if (fileName.endsWith(".css")) return "text/css";
-        if (fileName.endsWith(".js")) return "application/javascript";
-        if (fileName.endsWith(".png")) return "img";
-        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) return "image/jpeg";
-        if (fileName.endsWith(".gif")) return "image/gif";
-        if (fileName.endsWith(".svg")) return "image/svg+xml";
-
-        return "application/octet-stream";
-    }
 
 
     static class URLHandler_Get implements HttpHandler {
@@ -131,12 +112,18 @@ public class ServerHttp {
     }
 
     public static void writeDataToJson(ConfigsDto dto) {
-        String path = "src/main/java/ru/promelectronika/util_stuff/";
-        try (var fileWriter = new FileWriter(path + "configuration.json")) {
+          String path = "/home/root/chargingStation/configurations/";
+          try (var fileWriter = new FileWriter(path + "configuration.json")) {
+              LogHandler.loggerMain.info("IT IS OK");
+//        String path = "src/main/java/ru/promelectronika/util_stuff/";
+//        try (var fileWriter = new FileWriter(path + "configuration.json")) {
             String json = new ObjectMapper().writeValueAsString(dto);
             fileWriter.write(json);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            Thread.sleep(5000);
+            Runtime.getRuntime().exec((new String[]{"reboot"}));
+        } catch (IOException | InterruptedException e) {
+//            throw new RuntimeException(e);
+              LogHandler.loggerMain.info("IT IS NOT OK");
         }
 
     }

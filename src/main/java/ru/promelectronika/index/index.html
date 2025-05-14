@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+<!--    <link rel="stylesheet" href="style.css">-->
 
     <style>
         * {
@@ -376,7 +376,7 @@
         const list = [];
         for (let i = 0; i < props_group_el.children[0].children.length; i++) {
             let sn = props_group_el.children[0].children[i].className
-            if (sn.startsWith("center ip")) {
+            if (sn.startsWith("sp_between ip")) {
                 let input_value = props_group_el.children[0].children[i].children[1].value;
                 list.push(input_value)
             }
@@ -405,9 +405,10 @@
     function postParamsToJava() {
         gatherParamsInDto();
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:3060/postDataToJava", false);
+        xhr.open("POST", "http://192.168.3.200:3060/postDataToJava", false);
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.send(JSON.stringify(gatherParamsInDto()));
+        alert("Сохранение параметров,перезагрузка будет через 5 секунд")
     }
 
 
