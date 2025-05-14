@@ -404,11 +404,11 @@
     //sending data to java
     function postParamsToJava() {
         gatherParamsInDto();
+        alert("Сохранение параметров,перезагрузка будет через 5 секунд")
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "http://192.168.3.200:3060/postDataToJava", false);
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.send(JSON.stringify(gatherParamsInDto()));
-        alert("Сохранение параметров,перезагрузка будет через 5 секунд")
     }
 
 
