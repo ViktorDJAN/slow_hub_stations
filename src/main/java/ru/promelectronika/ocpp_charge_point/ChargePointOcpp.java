@@ -11,7 +11,6 @@ import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageConfirmation;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import lombok.Getter;
 import lombok.Setter;
-import ru.promelectronika.ocpp_charge_point.configuration.OcppConfigs;
 import ru.promelectronika.ocpp_charge_point.configuration.JsonClientBuilder;
 import ru.promelectronika.ocpp_charge_point.featureProfiles.core.CoreOperationEvents;
 
@@ -19,7 +18,7 @@ import ru.promelectronika.ocpp_charge_point.featureProfiles.core.client_requests
 import ru.promelectronika.ocpp_charge_point.featureProfiles.core.СsmsRequestsHandler;
 import ru.promelectronika.ocpp_charge_point.featureProfiles.remoteTrigger.TriggerConfirmationEvents;
 import ru.promelectronika.ocpp_charge_point.featureProfiles.remoteTrigger.confirmation.TriggerMessage;
-import ru.promelectronika.util_stuff.Configs2;
+import ru.promelectronika.util_stuff.ConfigsFile;
 
 import java.util.function.BooleanSupplier;
 
@@ -50,13 +49,13 @@ public class ChargePointOcpp implements CoreOperationEvents, TriggerConfirmation
                 if (isClosedClient.getAsBoolean()) {
                     client.connect(serverAddress, new ClientEventHandler(this));
                     System.out.println("CLIENT_OCPP CONNECTED: " + isConnected );
-                    BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, Configs2.cs_model, Configs2.vendor_name);
+                    BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, ConfigsFile.cs_model, ConfigsFile.vendor_name);
                     sendBootNotificationRequest(request);
                 }
             }
             if (isClosedClient.getAsBoolean()) {
                 client.connect(serverAddress, new ClientEventHandler(this));
-                BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, Configs2.cs_model, Configs2.vendor_name);
+                BootNotificationRequest request = RequestBuilder.buildBootNotificationRequest(BootReasonEnumType.PowerUp, ConfigsFile.cs_model, ConfigsFile.vendor_name);
                 sendBootNotificationRequest(request);
             }
         } catch (Exception e) {

@@ -8,7 +8,7 @@ import functional.runnable.EnergyCounterRunner;
 import functional.runnable.GetterMeasurements;
 import ru.promelectronika.util_stuff.ColorKind;
 import ru.promelectronika.util_stuff.ColorTuner;
-import ru.promelectronika.util_stuff.Configs2;
+import ru.promelectronika.util_stuff.ConfigsFile;
 import ru.promelectronika.util_stuff.LoggerPrinter;
 import ru.promelectronika.enums.LoggerType;
 
@@ -41,7 +41,7 @@ public class EnergyMeterProcess {
             if (!energyMetersList.isEmpty()) {
                 for (ThreePhaseEnergyMeter enMeter : energyMetersList) {
                     if (enMeter.getModbusMaster().isConnected()) {
-                        var enMeterRunnable = new EnergyCounterRunner(enMeter.getSlaveId(), new GetterMeasurements(false, Configs2.embedded_en_meter_id,Configs2.outer_en_meter_id), enMeter.getAddress(), enMeter.getModbusMaster());
+                        var enMeterRunnable = new EnergyCounterRunner(enMeter.getSlaveId(), new GetterMeasurements(false, ConfigsFile.embedded_en_meter_id, ConfigsFile.outer_en_meter_id), enMeter.getAddress(), enMeter.getModbusMaster());
                         service.scheduleAtFixedRate(enMeterRunnable, step * 600L, energyMetersList.size() * 600L, TimeUnit.MILLISECONDS);
                         step++;
                         LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER, "ENERGY_METER_PROCESS: ENERGY_COUNTER: " + enMeter.getSlaveId() +"   GET_STARTED_TO_WORK!");
