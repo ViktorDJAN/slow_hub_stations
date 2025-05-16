@@ -46,6 +46,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
     private final static Integer INTERVAL = 5; // frequency of sending MeterValues messages
     private final Integer stationHandlerID;
 
+
     public StationProxyHandler(SlowChargingStation station) {
         this.station = station;
         stationHandlerID = Integer.parseInt(station.getMode3ClientAddress().substring(10));
@@ -154,6 +155,8 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
             timeout((int) terminationInterval);
         }
         if (!station.getMode3Client().isConnected() && !TransactionsQueue.queue.isEmpty()) {
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, "MODE3 hash= " + station.getMode3Client().hashCode());
+
             LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER: CONTROLLER IS NOT CONNECTED AFTER: " + terminationInterval + " seconds ");
             var dto = new EvseDto(station.getEvseId(), station.getMode3Client().getConnectorId(), ProxyCommandsEnumType.STOP.getValue(), ZonedDateTime.now().toString());
             sendCommand(new ProxyCommandDto(HandlerEnumType.OCPP, dto.connectorState(), dto));
@@ -203,8 +206,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
 
     public void terminateSendingMetricsFutures() {
-        System.out.println("Came: terminate Sending Metrics Futures");
-        LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ":!!! STATION_PROXY_HANDLER: Terminate Sending Metrics Futures");
+        LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ":!!! STATION_PROXY_HANDLER: Terminate Sending Metrics Futures method()");
 
         try {
             if (isMeterValueFutureAlive.getAsBoolean() && isSendRpcSetLimitFutureAlive.getAsBoolean()) {

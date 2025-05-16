@@ -54,7 +54,7 @@ public class StationRunProcess implements Runnable {
 
     private void startControllerStarterFuture() {
         if (controllerConnectingFuture == null || controllerConnectingFuture.isDone()) {
-            controllerConnectingFuture = executorService.submit(new ControllerStarter(chargingStation, true));
+            controllerConnectingFuture = executorService.submit(new ControllerStarter(chargingStation));
         }
     }
 }
