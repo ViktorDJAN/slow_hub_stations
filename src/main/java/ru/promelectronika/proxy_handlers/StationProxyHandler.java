@@ -36,6 +36,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService scheduledExecutorService2 = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService scheduledExecutorService3 = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService scheduledExecutorService4 = Executors.newSingleThreadScheduledExecutor();
 
     private ScheduledFuture<?> sendMetersValueFuture = null;//
     private ScheduledFuture<?> sendRpcSetLimitFuture = null;//
@@ -141,7 +142,8 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
                 return new ProxyCommandDto(HandlerEnumType.OCPP, dto.connectorState(), dto);
             }
             // IF_CONNECTION OF CONTROLLER IS LOST
-            terminateTransactionInInterval();// In case connection lose , it will be fulfilled in 30 seconds
+            scheduledExecutorService4.schedule(this::terminateTransactionInInterval,30_000,TimeUnit.MILLISECONDS);
+//            terminateTransactionInInterval();// In case connection lose , it will be fulfilled in 30 seconds
         }
         return null;
     }
@@ -151,13 +153,13 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
      * The method is designed for terminating transaction in case connection with Mode3_Ctrl is lost
      */
     public void terminateTransactionInInterval() {
-        if (!station.getMode3Client().isConnected() && !TransactionsQueue.queue.isEmpty()) {
-            timeout((int) terminationInterval);
-        }
+//        if (!station.getMode3Client().isConnected() && !TransactionsQueue.queue.isEmpty()) {
+//            timeout((int) terminationInterval);
+//        }
         if (!station.getMode3Client().isConnected() && !TransactionsQueue.queue.isEmpty()) {
             LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, "MODE3 hash= " + station.getMode3Client().hashCode());
 
-            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER: CONTROLLER IS NOT CONNECTED AFTER: " + terminationInterval + " seconds ");
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER: TERMINATED WITH INTERVAL: " + terminationInterval + " seconds ");
             var dto = new EvseDto(station.getEvseId(), station.getMode3Client().getConnectorId(), ProxyCommandsEnumType.STOP.getValue(), ZonedDateTime.now().toString());
             sendCommand(new ProxyCommandDto(HandlerEnumType.OCPP, dto.connectorState(), dto));
             terminateSendingMetricsFutures();

@@ -20,7 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ControllerStarter implements Runnable {
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(3);
     private final SlowChargingStation station;
 
     private ScheduledFuture<?> pingSendFuture;
@@ -33,14 +33,9 @@ public class ControllerStarter implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            connectToController();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        executorService.scheduleAtFixedRate(this::connectToController,0,1000,TimeUnit.MILLISECONDS);
+
+
 
 
 
