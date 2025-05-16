@@ -158,7 +158,7 @@ public class Mode3Client extends RpcClient {
     }
 
     public void logMode3ClientData(String message) {
-        LoggerPrinter.logAndPrint(ColorKind.YELLOW_BG_BLACK_TEXT, LoggerType.MODE3_SEND, message);
+        LoggerPrinter.logAndPrint(ColorKind.YELLOW_BG_BLACK_TEXT, LoggerType.MODE3_LOGGER, message);
     }
 
 

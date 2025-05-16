@@ -51,29 +51,18 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
         stationHandlerID = Integer.parseInt(station.getMode3ClientAddress().substring(10));
     }
 
+
     @Override
     public void run() {
         initializePowerOnControllerState();
+        scheduledExecutorService3.scheduleAtFixedRate(()->{
+            processReceivedCommand(receiveCommand());
+        },0, 150, TimeUnit.MILLISECONDS);
         scheduledExecutorService2.scheduleAtFixedRate(()->{
             sendCommand(checkControllerStateChanges());
-
-        },0, 810, TimeUnit.MILLISECONDS);
-        scheduledExecutorService3.scheduleAtFixedRate(()->{
-
-            processReceivedCommand(receiveCommand());
-        },0, 60, TimeUnit.MILLISECONDS);
+        },0, 900, TimeUnit.MILLISECONDS);
 
 
-
-//        while (!Thread.interrupted()) {
-//            sendCommand(checkControllerStateChanges());
-//            try {
-//                Thread.sleep(50);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//            processReceivedCommand(receiveCommand());
-//        }
     }
 
     /**
@@ -88,18 +77,9 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
                     if (receivedCommand.command() == (ProxyCommandsEnumType.START_POWER_SUPPLY.getValue())
                             && dto.evseId().equals(station.getEvseId())) {
 
-
-//                        LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND,
-//                                stationHandlerID + ":  STATION_PROXY_HANDLER: START_POWER_SUPPLY! : GOT DTO" + dto + " TRANSACTION_QUEUE: "+ TransactionsQueue.queue );
-
-
-//                        LogHandler.loggerMode3Sending.info(stationHandlerID + ": STATION_PROXY_HANDLER: START_POWER_SUPPLY! : DTO" + dto );
                         startCharging(dto.evseId());
-                        ColorTuner.printRedText("START__ POWER_SUPPLY: ");
-                        LogHandler.loggerMode3Sending.info(stationHandlerID + ":  STATION_PROXY_HANDLER: START_POWER_SUPPLY! : GOT DTO" + dto + " TRANSACTION_QUEUE: "+ TransactionsQueue.queue );
-//                        LogHandler.loggerMode3Sending.info(stationHandlerID + ": STATION_PROXY_HANDLER: START_POWER_SUPPLY!");
-//                        ColorTuner.printBlackText(stationHandlerID + ": STATION_PROXY_HANDLER: START_POWER_SUPPLY!");
-
+                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.MODE3_LOGGER,
+                                stationHandlerID + ":  STATION_PROXY_HANDLER: START_POWER_SUPPLY! : GOT DTO" + dto + " TRANSACTION_QUEUE: "+ TransactionsQueue.queue );
                     }
 
 
@@ -108,28 +88,15 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
                         terminateSendingMetricsFutures();
                         if(dto.connectorState()!=null)connectorCurrentState = dto.connectorState();
-
-                        ColorTuner.printRedText("STOP__ POWER_SUPPLY: ");
-                        LogHandler.loggerMode3Sending.info(stationHandlerID + ":  STATION_PROXY_HANDLER: STOP_POWER_SUPPLY! : GOT DTO" + dto + " TRANSACTION_QUEUE: "+ TransactionsQueue.queue);
-//
-//                        LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND,
-//                                stationHandlerID + ":  STATION_PROXY_HANDLER: STOP_POWER_SUPPLY! : GOT DTO" + dto + " TRANSACTION_QUEUE: "+ TransactionsQueue.queue );
-
-
-//                        LogHandler.loggerMode3Sending.info(stationHandlerID + ": STATION_PROXY_HANDLER: STOP_POWER_SUPPLY!  transaction_queue_size: " + TransactionsQueue.queue.size());
-//                        ColorTuner.printBlackText(stationHandlerID + ": STATION_PROXY_HANDLER: STOP_POWER_SUPPLY!  transaction_queue_size: " + TransactionsQueue.queue.size());
+                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.MODE3_LOGGER,
+                                stationHandlerID + ":  STATION_PROXY_HANDLER: STOP_POWER_SUPPLY! : GOT DTO" + dto + " TRANSACTION_QUEUE: "+ TransactionsQueue.queue);
                     }
-
                 }
                 if (receivedCommand.command() == (ProxyCommandsEnumType.NETWORK_ERROR.getValue())) {
                     terminateSendingMetricsFutures();
                     TransactionsQueue.queue.clear();
-                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND,
+                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER,
                             stationHandlerID + ":  STATION_PROXY_HANDLER: NETWORK_ERROR! : TRANSACTION_QUEUE: "+ TransactionsQueue.queue );
-//                    LogHandler.loggerMode3Sending.info(stationHandlerID + ": STATION_PROXY_HANDLER: NETWORK_ERROR!  transaction_queue_size: " + TransactionsQueue.queue.size());
-//                    ColorTuner.printBlackText(stationHandlerID + ": STATION_PROXY_HANDLER: NETWORK_ERROR!  transaction_queue_size: " + TransactionsQueue.queue.size());
-
-
                 }
             }
         } catch (Exception e) {
@@ -142,8 +109,6 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
      * CHECKS ANY CHANGES RELATED TO THE CHARGE CONTROLLER, SUCH AS CABLE IN/OUT, and so on
      */
     public ProxyCommandDto checkControllerStateChanges() {
-
-
         BooleanSupplier isEmergencyPressed = () -> connectorCurrentState == ProxyCommandsEnumType.FAULT.getValue();
         BooleanSupplier isStopCommand = () -> connectorCurrentState == ProxyCommandsEnumType.STOP.getValue();
         BooleanSupplier isTransactionNotFinished = () -> !TransactionsQueue.queue.isEmpty();
@@ -155,26 +120,25 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
             connectorPreviousState = connectorCurrentState;
             connectorCurrentState = connectorState;
             if (connectorCurrentState != (connectorPreviousState)) {
-                LoggerPrinter.logAndPrint(ColorKind.WHITE_BG_RED_TEXT, LoggerType.MODE3_SEND, "checkCOntrollerState() ======= TRANSACTION_QUEUE = "+ TransactionsQueue.queue);
+                LoggerPrinter.logAndPrint(ColorKind.WHITE_BG_RED_TEXT, LoggerType.MODE3_LOGGER, "checkControllerState() ======= TRANSACTION_QUEUE = "+ TransactionsQueue.queue);
+
                 // ** EMERGENCY BUTTON PRESSED
                 if (isEmergencyPressed.getAsBoolean() && isTransactionNotFinished.getAsBoolean()) {
                     terminateSendingMetricsFutures();
-                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  EMERGENCY_BUTTON_PRESSED!");
+                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  EMERGENCY_BUTTON_PRESSED!");
                     return new ProxyCommandDto(HandlerEnumType.OCPP, ProxyCommandsEnumType.EMERGENCY_BUTTON_PRESSED.getValue(), null);
                 }
 
                 // ** THE CHARGING TRANSACTION IS NORMALLY COMPLETED
                 if (isStopCommand.getAsBoolean() && isTransactionNotFinished.getAsBoolean()) {
                     terminateSendingMetricsFutures();
-                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  THE CHARGING TRANSACTION IS NORMALLY COMPLETED! : " + TransactionsQueue.queue);
+                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  THE CHARGING TRANSACTION IS NORMALLY COMPLETED! : " + TransactionsQueue.queue);
                     return new ProxyCommandDto(HandlerEnumType.OCPP, ProxyCommandsEnumType.STOP.getValue(), null);
                 }
-
                 // ** ANY_STATE_CHANGES
                 var dto = new EvseDto(station.getEvseId(), station.getMode3Client().getConnectorId(), connectorState, ZonedDateTime.now().toString());
                 return new ProxyCommandDto(HandlerEnumType.OCPP, dto.connectorState(), dto);
             }
-
             // IF_CONNECTION OF CONTROLLER IS LOST
             terminateTransactionInInterval();// In case connection lose , it will be fulfilled in 30 seconds
         }
@@ -190,10 +154,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
             timeout((int) terminationInterval);
         }
         if (!station.getMode3Client().isConnected() && !TransactionsQueue.queue.isEmpty()) {
-
-            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER: CONTROLLER IS NOT CONNECTED AFTER: " + terminationInterval + " seconds ");
-
-//            ColorTuner.whiteBackgroundRedText(stationHandlerID + ": STATION_PROXY_HANDLER: CONTROLLER IS NOT CONNECTED AFTER: " + terminationInterval + " seconds ");
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER: CONTROLLER IS NOT CONNECTED AFTER: " + terminationInterval + " seconds ");
             var dto = new EvseDto(station.getEvseId(), station.getMode3Client().getConnectorId(), ProxyCommandsEnumType.STOP.getValue(), ZonedDateTime.now().toString());
             sendCommand(new ProxyCommandDto(HandlerEnumType.OCPP, dto.connectorState(), dto));
             terminateSendingMetricsFutures();
@@ -203,7 +164,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
     public void startCharging(Integer evseId) throws InterruptedException {
         if (!TransactionsQueue.queue.isEmpty()) {
-            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER: startCharging(): TRANSACTION_QUEUE IS NOT EMPTY" + TransactionsQueue.queue);
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER: startCharging(): TRANSACTION_QUEUE IS NOT EMPTY" + TransactionsQueue.queue);
 
             for (TransactionInfo info : TransactionsQueue.queue) {
                 if (info.getRequest().getEvse().getId().equals(evseId) && info.isStarted()) {
@@ -226,15 +187,14 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
                         sendRpcSetLimitFuture.cancel(true);
                         sendRpcSetLimitFuture = sendRpcSetCurrentLimits();
                     }
-                    LoggerPrinter.logAndPrint(ColorKind.WHITE_BG_RED_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE   STARTED: IS_DONE: " + sendMetersValueFuture.isDone() + " " + sendMetersValueFuture.hashCode());
-                    LoggerPrinter.logAndPrint(ColorKind.WHITE_BG_RED_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS   STARTED: IS_DONE: " + sendRpcSetLimitFuture.isDone() + " " + sendRpcSetLimitFuture.hashCode());
+                    LoggerPrinter.logAndPrint(ColorKind.WHITE_BG_RED_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE   STARTED: IS_DONE: " + sendMetersValueFuture.isDone() + " " + sendMetersValueFuture.hashCode());
+                    LoggerPrinter.logAndPrint(ColorKind.WHITE_BG_RED_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS   STARTED: IS_DONE: " + sendRpcSetLimitFuture.isDone() + " " + sendRpcSetLimitFuture.hashCode());
 
 
                 }
             }
-//            station.getMode3Client().rpcSetCurrentLimits();
         }else{
-            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER: startCharging(): TRANSACTION_QUEUE IS  EMPTY" + TransactionsQueue.queue);
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER: startCharging(): TRANSACTION_QUEUE IS  EMPTY" + TransactionsQueue.queue);
 
 
 
@@ -244,24 +204,20 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
     public void terminateSendingMetricsFutures() {
         System.out.println("Came: terminate Sending Metrics Futures");
-        LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ":!!! STATION_PROXY_HANDLER: Terminate Sending Metrics Futures");
-
-//        LogHandler.loggerEnergyMeterProcess.info(stationHandlerID + ":!!! STATION_PROXY_HANDLER: Terminate Sending Metrics Futures");
+        LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ":!!! STATION_PROXY_HANDLER: Terminate Sending Metrics Futures");
 
         try {
             if (isMeterValueFutureAlive.getAsBoolean() && isSendRpcSetLimitFutureAlive.getAsBoolean()) {
                 sendMetersValueFuture.cancel(true);
                 sendRpcSetLimitFuture.cancel(true);
-
                 station.getMode3Client().rpcUserStop();
 
-                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  USER_STOP_SENT___________________________________________" + station.getMode3Client().getSocket().getRemoteSocketAddress());
-                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE IS CANCELLED: " + sendMetersValueFuture.isCancelled() + sendMetersValueFuture.hashCode());
-                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS IS CANCELLED: " + sendRpcSetLimitFuture.isCancelled() + sendRpcSetLimitFuture.hashCode());
+                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  USER_STOP_SENT________________________" + station.getMode3Client().getSocket().getRemoteSocketAddress());
+                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE IS CANCELLED: " + sendMetersValueFuture.isCancelled() + sendMetersValueFuture.hashCode());
+                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS IS CANCELLED: " + sendRpcSetLimitFuture.isCancelled() + sendRpcSetLimitFuture.hashCode());
 
-
-                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE IS DONE: " + sendMetersValueFuture.isDone() + sendMetersValueFuture.hashCode());
-                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND, stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS IS DONE: " + sendRpcSetLimitFuture.isDone() + sendRpcSetLimitFuture.hashCode());
+                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  SEND_METER_VALUE_FUTURE IS DONE: " + sendMetersValueFuture.isDone() + sendMetersValueFuture.hashCode());
+                LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER:  SET_CURRENT_LIMITS IS DONE: " + sendRpcSetLimitFuture.isDone() + sendRpcSetLimitFuture.hashCode());
 
 
             }
@@ -311,7 +267,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
                 if (TransferredCurrent.maximumCurrentLimitA > 0.0 && actualCurrent != previousCurrent) {
                     station.getMode3Client().rpcSetCurrentLimits();
 
-                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_SEND,
+                    LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER,
                             stationHandlerID + ": STATION_PROXY_HANDLER: CURRENT CHANGED! Current Limits SENT to the CHARGE_CONTROLLER:" + actualCurrent);
                 }
             }
@@ -324,7 +280,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
     public ProxyCommandDto receiveCommand() {
         for (ProxyCommandDto dto : ProxyQueue.queue) {
             if (dto.enumType().equals(HandlerEnumType.STATION)) {
-                LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_CYAN_TEXT, LoggerType.MODE3_SEND,
+                LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_CYAN_TEXT, LoggerType.MODE3_LOGGER,
                         stationHandlerID + ": STATION_PROXY_HANDLER: RECEIVED  ProxyCommandDto: -- " + dto + " MAP_SIZE: " + ProxyQueue.queue.size());
                 ProxyQueue.queue.removeFirstOccurrence(dto);
                 return dto;
@@ -339,7 +295,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
         BooleanSupplier isDtoNotNull = () -> dto != null;
         if (isDtoNotNull.getAsBoolean()) {
             ProxyQueue.queue.addLast(dto);
-            LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_CYAN_TEXT, LoggerType.MODE3_SEND,
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_CYAN_TEXT, LoggerType.MODE3_LOGGER,
                     stationHandlerID + ": STATION_PROXY_HANDLER: SENT ProxyCommand: " + dto + " ProxyQueue.queue.size_SIZE: " + ProxyQueue.queue.size());
         }
     }
@@ -347,7 +303,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
     public void initializePowerOnControllerState() {
         try {
-            LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_CYAN_TEXT, LoggerType.MODE3_SEND,
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_CYAN_TEXT, LoggerType.MODE3_LOGGER,
                     stationHandlerID + ": STATION_PROXY_HANDLER: CHARGING CONTROLLER INITIALIZED");
             station.getMode3Client().rpcPing();
             connectorCurrentState = 100;

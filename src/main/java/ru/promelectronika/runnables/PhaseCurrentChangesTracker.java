@@ -1,10 +1,15 @@
 package ru.promelectronika.runnables;
 
 
+import ru.promelectronika.enums.LoggerType;
+import ru.promelectronika.util_stuff.ColorKind;
 import ru.promelectronika.util_stuff.ColorTuner;
 import ru.promelectronika.dataBases.OuterEnMeterDtoDataBase;
 import ru.promelectronika.dto.TransferredCurrent;
 import ru.promelectronika.enums.EnergyMeterType;
+import ru.promelectronika.util_stuff.LoggerPrinter;
+
+import static ru.promelectronika.enums.NetworkType.THREE_PHASE_NETWORK;
 
 public class PhaseCurrentChangesTracker implements Runnable {
     private volatile double previousCurrent = 0;
@@ -36,10 +41,9 @@ public class PhaseCurrentChangesTracker implements Runnable {
                 abs = Math.abs(previousCurrent - actualCurrent);
             }
             if (abs > 2.0) {
-                System.out.println("CHANGES OF CURRENT GRATER THAN 2.0: " + actualCurrent);
+                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.ENERGY_METER_LOGGER, " PhaseCurrentChangesTracker : CHANGES OF CURRENT GRATER THAN 2.0: " + actualCurrent);
                 return actualCurrent;
             }
-//            System.out.println("Previous_current: "+previousCurrent + "___" + "_actual: " + actualCurrent + " ");// you can comment it
         } catch (Exception e) {
             try {
                 Thread.sleep(100);

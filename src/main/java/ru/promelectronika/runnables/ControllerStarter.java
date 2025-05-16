@@ -34,14 +34,6 @@ public class ControllerStarter implements Runnable {
     @Override
     public void run() {
         executorService2.scheduleAtFixedRate(this::connectToController, 0, 3000, TimeUnit.MILLISECONDS);
-//        while (!Thread.interrupted()) {
-//            try {
-//                Thread.sleep(3000);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//            connectToController();
-//        }
     }
 
     public void connectToController() {

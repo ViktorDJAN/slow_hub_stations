@@ -20,8 +20,7 @@ import ru.promelectronika.logHandler.LogHandler;
 import java.util.*;
 import java.util.List;
 
-import static ru.promelectronika.enums.NetworkType.THREE_PHASE_NETWORK;
-import static ru.promelectronika.enums.NetworkType.UNDEFINED;
+import static ru.promelectronika.enums.NetworkType.*;
 
 
 public class CalculatingAvailableParamsProcess implements Runnable {
@@ -131,13 +130,16 @@ public class CalculatingAvailableParamsProcess implements Runnable {
                         Optional<Double> phaseU = voltagesList.stream()
                                 .filter(voltage -> voltage > 198)
                                 .findAny();
+                        LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.ENERGY_METER_LOGGER,
+                                " ID: " + enMeterId + " ONE_PHASE_NETWORK:  CALCULATE_CONSUMED_CAR_CURRENT: " + optionalPhaseI.get() );
+
                         consumedPower = optionalPhaseI.get() * phaseU.get();
                         dto.setConsumedPower(consumedPower);
                         dto.setPhaseCurrent(optionalPhaseI.get());
                         dto.setPhaseVoltage(phaseU.get());
-                        dto.setCurrentMap(getCurrentMap());
-                        dto.setVoltageMap(getVoltageMap());
 
+                        LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.ENERGY_METER_LOGGER,
+                                " ID: " + enMeterId + " ONE_PHASE_NETWORK:  CALCULATE_CONSUMED_CAR_CURRENT: " + consumedPower );
                         InnerEnMeterDtoDataBase.map.put(enMeterId, dto);
                         break;
 
@@ -146,7 +148,10 @@ public class CalculatingAvailableParamsProcess implements Runnable {
                                 .filter(current -> current > 0.016)
                                 .findAny()
                                 .orElse(0.0));
-                        ColorTuner.printPurpleText("CALCULATE_CONSUMED_CAR_CURRENT: " + optionalPhaseI.get() + " ID: " + enMeterId);
+
+                        LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.ENERGY_METER_LOGGER,
+                                " ID: " + enMeterId + " THREE_PHASE_NETWORK:  CALCULATE_CONSUMED_CAR_CURRENT: " + optionalPhaseI.get() );
+
 
                         double averageVoltage = (voltagesList
                                 .stream()
@@ -180,6 +185,10 @@ public class CalculatingAvailableParamsProcess implements Runnable {
                     Optional<Double> phaseU = getVoltageMap().values().stream()
                             .filter(voltage -> voltage > 198)
                             .findAny();
+
+                    LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.ENERGY_METER_LOGGER,
+                            " ID: " + enMeterId + " ONE_PHASE_NETWORK:  CALCULATE_CONSUMED_CAR_CURRENT: " + optionalPhaseI.get() );
+
                     consumedPower = optionalPhaseI.get() * phaseU.get();
                     dto.setConsumedPower(consumedPower);
                     dto.setPhaseCurrent(optionalPhaseI.get());
@@ -195,7 +204,9 @@ public class CalculatingAvailableParamsProcess implements Runnable {
                             .filter(current -> current > 0.016)
                             .findAny()
                             .orElse(0.0));
-                    ColorTuner.printPurpleText("CALCULATE_CONSUMED_CAR_CURRENT: " + optionalPhaseI.get() + " ID: " + enMeterId);
+
+                    LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.ENERGY_METER_LOGGER,
+                            " ID: " + enMeterId + " THREE_PHASE_NETWORK:  CALCULATE_CONSUMED_CAR_CURRENT: " + optionalPhaseI.get() );
 
                     double averageVoltage = (getVoltageMap()
                             .values()
@@ -255,9 +266,8 @@ public class CalculatingAvailableParamsProcess implements Runnable {
             phaseI = availablePower / (voltageOnePhase.get());
             return phaseI;
         }
-        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.MAIN_LOGGER,
-                "CALCULATING_AVAILABLE_PARAMS: getAvailablePhaseCurrent_ONEPhaseNetwork() ," +
-                        "CAN'T GET AVAILABLE PHASE CURRENT ON ONE_PHASE_NETWORK, phaseI = 0");
+        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.ENERGY_METER_LOGGER,
+                "CALCULATING_AVAILABLE_PARAMS: CAN'T GET AVAILABLE PHASE CURRENT ON ONE_PHASE_NETWORK, phaseI = 0");
         return 0;
     }
 
@@ -273,8 +283,7 @@ public class CalculatingAvailableParamsProcess implements Runnable {
             phaseI = availablePower / (3 * averageVoltage * COS_PHI);
             return phaseI;
         }
-        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.MAIN_LOGGER, "CALCULATING_AVAILABLE_PARAMS: getAvailablePhaseCurrent_THREEPhaseNetwork() ," +
-                "CAN'T GET AVAILABLE PHASE CURRENT ON THREE_PHASE_NETWORK, phaseI = 0");
+        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.ENERGY_METER_LOGGER, "CALCULATING_AVAILABLE_PARAMS: CAN'T GET AVAILABLE PHASE CURRENT ON THREE_PHASE_NETWORK, phaseI = 0");
         return 0;
     }
 
@@ -298,8 +307,9 @@ public class CalculatingAvailableParamsProcess implements Runnable {
             return voltageOnePhase.get() * currentOnePhase.get();
 
         } catch (NoSuchElementException e) {
-            ColorTuner.redBackgroundBlackText("CALCULATING_AVAILABLE_PARAMS: calculatePresentConsumingPowerONE_Phase(); " +
+            LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.ENERGY_METER_LOGGER, "CALCULATING_AVAILABLE_PARAMS:  ONE_PHASE_NETWORK; " +
                     " No such element: " + e.getMessage());
+
         }
         return 0;
     }
@@ -317,9 +327,13 @@ public class CalculatingAvailableParamsProcess implements Runnable {
     public Map<String, Double> getCurrentMap() {
         MeasurementDto measurementDto = MeasurementsBase.map.get(enMeterId);
         Map<String, Double> currentMap = new HashMap<>();
-        currentMap.put("currentPL1", measurementDto.getCurrentPL1());
-        currentMap.put("currentPL2", measurementDto.getCurrentPL2());
-        currentMap.put("currentPL3", measurementDto.getCurrentPL3());
+        try {
+            currentMap.put("currentPL1", measurementDto.getCurrentPL1());
+            currentMap.put("currentPL2", measurementDto.getCurrentPL2());
+            currentMap.put("currentPL3", measurementDto.getCurrentPL3());
+        } catch (Exception e) {
+            System.out.println("CAN NOT TAKE CURRENT MAP : " + MeasurementsBase.map.get(enMeterId));
+        }
 
         return currentMap;
     }
@@ -329,30 +343,17 @@ public class CalculatingAvailableParamsProcess implements Runnable {
         if (MeasurementsBase.map.get(energyCounterId) != null) {
             MeasurementDto dto = MeasurementsBase.map.get(energyCounterId);
             if ((dto.getVoltagePL1() > 198 && dto.getVoltagePL2() > 198 && dto.getVoltagePL3() > 198)) {
-                LogHandler.loggerMain.info(THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-
-                //                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-//                        THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-
+                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.ENERGY_METER_LOGGER, THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
                 return THREE_PHASE_NETWORK;
 
             } else if (dto.getVoltagePL1() >= 198 || dto.getVoltagePL2() >= 198 || dto.getVoltagePL3() >= 198) {
-                LogHandler.loggerMain.info(NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-
-//                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-//                        NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-
-                return NetworkType.ONE_PHASE_NETWORK;
+                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.ENERGY_METER_LOGGER, ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+                return ONE_PHASE_NETWORK;
 
             } else if ((dto.getVoltagePL1() < 198 && dto.getVoltagePL2() < 198 || dto.getVoltagePL3() > 198)) {
-                LogHandler.loggerMain.info("EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
+                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.ENERGY_METER_LOGGER, "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
                         + "L1: " + dto.getVoltagePL1() + " L2: " + dto.getVoltagePL2() +
                         " L2:" + dto.getVoltagePL3() + "\n" + " " + UNDEFINED);
-
-//                LoggerPrinter.logAndPrint(ColorKind.RED_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER,
-//                        "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
-//                                + "L1: " + dto.getVoltagePL1() + " L2: " + dto.getVoltagePL2() +
-//                                " L2:" + dto.getVoltagePL3() + "\n" + " " + UNDEFINED);
             }
         }
 
@@ -368,29 +369,18 @@ public class CalculatingAvailableParamsProcess implements Runnable {
             if (dto.vL3() > 198) countPhaseLine++;
 
             if (countPhaseLine == 1) {
-                LogHandler.loggerMain.info(NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-//                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-//                        NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-
-                return NetworkType.ONE_PHASE_NETWORK;
+                LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.ENERGY_METER_LOGGER, ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+                return ONE_PHASE_NETWORK;
 
             } else if (countPhaseLine == 2 || countPhaseLine == 3) {
-                LogHandler.loggerMain.info(THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-
-//                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-//                        THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-
+                LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.ENERGY_METER_LOGGER, THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
                 return THREE_PHASE_NETWORK;
 
+
             } else if ((dto.vL1() < 198 && dto.vL2() < 198 || dto.vL3() < 198)) {
-                LogHandler.loggerMain.info("EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
+                LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.ENERGY_METER_LOGGER, "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
                         + "L1: " + dto.vL1() + " L2: " + dto.vL2() +
                         " L2:" + dto.vL3() + "\n" + " " + UNDEFINED);
-
-//                LoggerPrinter.logAndPrint(ColorKind.RED_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER,
-//                        "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
-//                                + "L1: " + dto.vL1() + " L2: " + dto.vL2() +
-//                                " L2:" + dto.vL3() + "\n" + " " + UNDEFINED);
             }
         }
 
@@ -400,13 +390,10 @@ public class CalculatingAvailableParamsProcess implements Runnable {
     private BuiltInCtrlMeasurementsDto mapToDto() {
 
         try {
-//            System.out.println(CtrlEnMeterParamsDataBase.map);
             Map<String, Double> accumulatingMap = new HashMap<>();
             Map<String, Double> map = CtrlEnMeterParamsDataBase.map.get(enMeterId);
-//            System.out.println(enMeterId+" " +map + " ");
             if (!map.isEmpty()) {
                 if (!isAccumulated) {
-
                     for (int i = 0; i < 10; i++) {
                         Thread.sleep(100);
                         if (map.get("vL1") > 0) {
@@ -416,15 +403,11 @@ public class CalculatingAvailableParamsProcess implements Runnable {
                         if (map.get("vL2") > 0) {
                             double vl_2 = map.get("vL2");
                             accumulatingMap.put("vL2", vl_2);
-
                         }
                         if (map.get("vL3") > 0) {
                             double vl_3 = map.get("vL3");
                             accumulatingMap.put("vL3", vl_3);
-
                         }
-
-
                     }
                     isAccumulated = true;
                     return new BuiltInCtrlMeasurementsDto(accumulatingMap.get("vL1"), accumulatingMap.get("vL2"), accumulatingMap.get("vL3"),

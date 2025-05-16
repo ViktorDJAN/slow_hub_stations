@@ -34,10 +34,6 @@ public class StationRunProcess implements Runnable {
             startControllerStarterFuture();
             startStationProxyHandlerFuture();
         });
-//        while (!Thread.interrupted()) {
-//          startControllerStarterFuture();
-//            startStationProxyHandlerFuture();
-//        }
     }
 
     private void startOcppProxyHandler() {

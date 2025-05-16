@@ -1,7 +1,10 @@
 package ru.promelectronika.runnables;
 
+import ru.promelectronika.enums.LoggerType;
+import ru.promelectronika.util_stuff.ColorKind;
 import ru.promelectronika.util_stuff.ColorTuner;
 import ru.promelectronika.dataBases.Mode3ControllersDataBase;
+import ru.promelectronika.util_stuff.LoggerPrinter;
 
 import java.time.LocalTime;
 
@@ -22,19 +25,12 @@ public class RpcPingSender implements Runnable {
                 mode3Client.rpcPing();
                 mode3Client.setConnected(true);
                 ColorTuner.printRedText(stationId+" :PING: " + LocalTime.now());
-//                mode3Client.rpcReqSeccCurrentState();
             }
         } catch (RuntimeException e) {
             mode3Client.setConnected(false);
-            ColorTuner.redBackgroundBlackText("CAN NOT SEND PING...." + e.getMessage());
+            LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MODE3_LOGGER, "CAN NOT SEND PING...." + e.getMessage());
             throw new RuntimeException();
-            // closing and removing the client from the mapControllers
-//            mode3Client.closeClientSocket();
-//            Mode3ControllersDataBase.map.remove(stationId);
-//
-//            //Canceling and removing the future_task
-//            FutureTasksDataBase.map.get(stationId).cancel(true);
-//            FutureTasksDataBase.map.remove(stationId);
+
         }
     }
 }

@@ -21,7 +21,7 @@ public class ServerStarter implements Runnable {
     @Override
     public void run() {
         try {
-            LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER, "RpcServer has started on" + server.getServerSocketChannel().getLocalAddress());
+            LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.RPC_SERVER_LOGGER, "RpcServer has started on" + server.getServerSocketChannel().getLocalAddress());
             while (!Thread.interrupted()) {
                 server.start();
 
@@ -29,8 +29,8 @@ public class ServerStarter implements Runnable {
             }
 
         } catch (IOException  e) {
-//            e.printStackTrace();
-            System.out.println("SERVER_STARTER_GOT EXCEPTION");
+            LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.RPC_SERVER_LOGGER, "SERVER_STARTER_GOT EXCEPTION" + e.getMessage());
+
         }
     }
 }

@@ -37,9 +37,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, JoranException, InterruptedException {
 
-        //         ** HTTP **
-        ColorTuner.printBlackText("Http Started...");
-        ServerHttp.startHttpServer("192.168.3.200", 3060);
+
 //
 //
 //        // INITIALIZATION
@@ -49,13 +47,17 @@ public class Main {
         ConfigsFile.setConfigsBasedOnJSONFile("/home/root/chargingStation/configurations/configuration.json");
 //        ConfigsFile.setConfigsBasedOnJSONFile("slow_charging_station/home/root/chargingStation/configurations/configuration.json");
 
-//
+        //         ** HTTP **
+        ServerHttp.startHttpServer("192.168.3.200", 3060);
+        LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER, "Http Started..." + ServerHttp.getServer().getAddress());
+
+
         ScheduledExecutorService scheduled_service = Executors.newScheduledThreadPool(7 + ConfigsFile.mode3_controller_addresses.size());
 
         // CHARGE_POINT_INITIALIZATION
         var chargePointOcpp = new ChargePointOcpp(ConfigsFile.ocpp_server_address);
         OcppOperation.setChargePointOcpp(chargePointOcpp);
-        scheduled_service.scheduleAtFixedRate(chargePointOcpp::connect, 0, 3000, TimeUnit.MILLISECONDS);
+        scheduled_service.scheduleAtFixedRate(chargePointOcpp::connect, 20, 3000, TimeUnit.MILLISECONDS);
         // MODBUS DEVICES INITIALIZATION
         ModbusMaster master2 = DeviceModbus.initialModbusMasterTCP(ConfigsFile.outer_en_meter_ip_address);
         var outerEnMeter = new ThreePhaseEnergyMeter(ConfigsFile.outer_en_meter_id, master2, ConfigsFile.outer_en_meter_ip_address);
@@ -63,7 +65,7 @@ public class Main {
 
         // KICK OFF RPC_SERVER
         rpcServer = new RpcServer(ConfigsFile.rpc_server_address, ConfigsFile.rpc_server_port);
-        scheduled_service.scheduleAtFixedRate(new ServerStarter(rpcServer), 0, 5000, TimeUnit.MILLISECONDS);
+        scheduled_service.scheduleAtFixedRate(new ServerStarter(rpcServer), 20, 5000, TimeUnit.MILLISECONDS);
 
 
 
@@ -72,13 +74,13 @@ public class Main {
         LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER, "ENERGY_METER_COUNTERS ARE STARTED");
 
         // GETTING AVAILABLE POWER OF THE BUILDING  kWT  (OUTER ENERGY_METER)
-        scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER, EnergyMeterKind.NON_BUILT_IN), 50, 650, TimeUnit.MILLISECONDS);
+        scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER, EnergyMeterKind.NON_BUILT_IN), 20, 650, TimeUnit.MILLISECONDS);
         // KICK OFF TRACKER FOR TRACKING CURRENT CHANGES
         scheduled_service.scheduleAtFixedRate(new PhaseCurrentChangesTracker(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER), 400, 500, TimeUnit.MILLISECONDS);
         // GETTING CONSUMING POWER BY THE SLOW_STATION  kWT  (INNER ENERGY_METER)
         for (String address : ConfigsFile.mode3_controller_addresses) {
             int embeddedEnMeterId = Integer.parseInt(address.substring(10));
-            scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(embeddedEnMeterId, EnergyMeterType.INNER_ENERGY_METER, EnergyMeterKind.BUILT_IN), 0, 1500, TimeUnit.MILLISECONDS);
+            scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(embeddedEnMeterId, EnergyMeterType.INNER_ENERGY_METER, EnergyMeterKind.BUILT_IN), 20, 1500, TimeUnit.MILLISECONDS);
         }
 
         // OCPP_HANDLER_START
@@ -93,7 +95,5 @@ public class Main {
 
             scheduled_service.schedule(new StationRunProcess(station, chargePointOcpp), 4000, TimeUnit.MILLISECONDS);
         }
-
-
     }
 }

@@ -44,17 +44,14 @@ public class RemoteStopTransactionRequestHandler {
             chargePoint.sendTransactionEventRequest(stopRequest);
             ColorTuner.printRedText("STOP_REQUEST: " + stopRequest);
 
-            //REMOVING TRANSACTION
+            //REMOVING TRANSACTION  (Transaction gets removed in OCPP_HANDLER, after getting message "5" -stop  from STATION_HANDLER)
             for (TransactionInfo info : TransactionsQueue.queue) {
                 if (info.getTransactionId().equals(request.getTransactionId()) && info.isStarted()) {
                     EvseDto dto = new EvseDto(info.getRequest().getEvse().getId(), null, 1, null);
                     ColorTuner.printRedText("EVSE_DTO___" + dto);
                     proxyHandler.sendCommand(new ProxyCommandDto(HandlerEnumType.STATION, ProxyCommandsEnumType.STOP_POWER_SUPPLY.getValue(), dto));
-//                    boolean remove = TransactionsQueue.queue.remove(info);
-//                    ColorTuner.printBlackText("REMOVED TRANSACTION : " + remove);
                 }
             }
-//            TransactionsQueue.queue.removeFirst();// removing
 
             LoggerPrinter.logAndPrint(ColorKind.WHITE_BG_BLUE_TEXT, LoggerType.OCPP_LOGGER, "RECEIVED_FROM_CSMS RequestStopTransactionRequest REQ: {} " + request);
             return new RequestStopTransactionResponse(RequestStartStopStatusEnumType.Accepted);
