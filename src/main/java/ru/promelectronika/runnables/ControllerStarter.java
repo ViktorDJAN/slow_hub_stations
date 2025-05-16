@@ -2,6 +2,7 @@ package ru.promelectronika.runnables;
 
 
 import ru.promelectronika.util_stuff.ColorKind;
+import ru.promelectronika.util_stuff.ConfigsFile;
 import ru.promelectronika.util_stuff.LoggerPrinter;
 import ru.promelectronika.model.SlowChargingStation;
 import ru.promelectronika.dataBases.ControllersParamsDataBase;
@@ -22,6 +23,7 @@ public class ControllerStarter implements Runnable {
     private final SlowChargingStation station;
     private final boolean isLoggerOn;
     private ScheduledFuture<?> pingSendFuture;
+    private final ScheduledExecutorService executorService2 = Executors.newSingleThreadScheduledExecutor();
 
     public ControllerStarter(SlowChargingStation slowChargingStation, boolean isLoggerOn) {
         this.station = slowChargingStation;
@@ -31,14 +33,15 @@ public class ControllerStarter implements Runnable {
 
     @Override
     public void run() {
-        while (!Thread.interrupted()) {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            connectToController();
-        }
+        executorService2.scheduleAtFixedRate(this::connectToController, 0, 3000, TimeUnit.MILLISECONDS);
+//        while (!Thread.interrupted()) {
+//            try {
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//            connectToController();
+//        }
     }
 
     public void connectToController() {
@@ -54,13 +57,13 @@ public class ControllerStarter implements Runnable {
                 var mode3Client = new Mode3Client(station.getConnectorId());
                 mode3Client.connectToSocket(station.getMode3ClientAddress(), station.getMode3ClientPort());
                 Mode3ControllersDataBase.map.put(controllerId, mode3Client);
-
                 station.setMode3Client(mode3Client);
+
+                mode3Client.rpcLog(true, ConfigsFile.logger_remote_address,ConfigsFile.logger_remote_port);
 
                 // CREATING AND ADDING CONTROLLER PARAMS DTO TO MAP
                 if (mode3Client.getSocket().isConnected()) {
-                    mode3Client.rpcConnectRequest(station.getServerAddress(), station.getServerPort());
-//                    mode3Client.rpcLog(true, station.getServerAddress(), station.getServerPort());
+                    mode3Client.  rpcConnectRequest(station.getServerAddress(), station.getServerPort());
                     ControllersParamsDataBase.map.put(controllerId, new ControllerParamsDto());
                 }
 

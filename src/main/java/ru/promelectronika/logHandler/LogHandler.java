@@ -14,7 +14,7 @@ public class LogHandler {
     public static Logger loggerMain = (Logger) LoggerFactory.getLogger(LoggerType.MAIN_LOGGER.name());// MAIN_LOGGER
     public static Logger loggerServer = (Logger) LoggerFactory.getLogger(LoggerType.RPC_SERVER.name());//RPC_SERVER
     public static Logger loggerEnergyMeterProcess = (Logger) LoggerFactory.getLogger(LoggerType.ENERGY_METER_LOGGER.name());
-    public static Logger loggerMode3Sending = (Logger) LoggerFactory.getLogger(LoggerType.MODE3_SEND.name());
+    public static Logger loggerMode3Sending =       (Logger) LoggerFactory.getLogger(LoggerType.MODE3_SEND.name());
     public static Logger loggerMode3Receive = (Logger) LoggerFactory.getLogger(LoggerType.MODE3_RECEIVE.name());
     public static Logger loggerOcpp = (Logger) LoggerFactory.getLogger(LoggerType.OCPP_LOGGER.getName());//OCPP_HANDLER
 

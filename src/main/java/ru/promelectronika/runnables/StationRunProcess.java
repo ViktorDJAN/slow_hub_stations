@@ -13,6 +13,7 @@ public class StationRunProcess implements Runnable {
     private final SlowChargingStation chargingStation;
     private final ChargePointOcpp chargePointOcpp;
     private final ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private Future<?> controllerConnectingFuture = null;
     private Future<?> stationProxyHandler = null;
     private Future<?> ocppProxyFuture = null;
@@ -24,23 +25,19 @@ public class StationRunProcess implements Runnable {
 
     @Override
     public void run() {
-        try {
-            startCharging();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        startCharging();
     }
 
-    // todo add build supplier or predicate. Split handlers start into separated methods
-    public void startCharging() throws InterruptedException {
-        while (true) {
 
-
-                startControllerStarter();
-//            startOcppProxyHandler();
-                startStationProxyHandler();
-
-        }
+    public void startCharging() {
+        scheduledExecutorService.execute(()->{
+            startControllerStarterFuture();
+            startStationProxyHandlerFuture();
+        });
+//        while (!Thread.interrupted()) {
+//          startControllerStarterFuture();
+//            startStationProxyHandlerFuture();
+//        }
     }
 
     private void startOcppProxyHandler() {
@@ -53,13 +50,13 @@ public class StationRunProcess implements Runnable {
         }
     }
 
-    private void startStationProxyHandler() {
+    private void startStationProxyHandlerFuture() {
         if (stationProxyHandler == null || stationProxyHandler.isDone()) {
             stationProxyHandler = executorService.submit(new StationProxyHandler(chargingStation));
         }
     }
 
-    private void startControllerStarter() {
+    private void startControllerStarterFuture() {
         if (controllerConnectingFuture == null || controllerConnectingFuture.isDone()) {
             controllerConnectingFuture = executorService.submit(new ControllerStarter(chargingStation, true));
         }

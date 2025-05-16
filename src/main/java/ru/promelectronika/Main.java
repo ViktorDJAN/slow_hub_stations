@@ -27,25 +27,29 @@ import ru.promelectronika.runnables.*;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+
 
 public class Main {
     private volatile static RpcServer rpcServer = null;
 
-    public static void main(String[] args) throws IOException, JoranException {
+    public static void main(String[] args) throws IOException, JoranException, InterruptedException {
 
         //         ** HTTP **
         ColorTuner.printBlackText("Http Started...");
         ServerHttp.startHttpServer("192.168.3.200", 3060);
-
-
-        // INITIALIZATION
+//
+//
+//        // INITIALIZATION
         LoggerPrinter.turnOnLogConfigurator(true);
         LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER, "PROGRAM STARTED IN MAIN");
-        // CONFIGURATIONS READING
-        ConfigsFile.setConfigsBasedOnJSONFile("src/main/java/ru/promelectronika/util_stuff/configuration.json");
+//        // CONFIGURATIONS READING
+        ConfigsFile.setConfigsBasedOnJSONFile("/home/root/chargingStation/configurations/configuration.json");
+//        ConfigsFile.setConfigsBasedOnJSONFile("slow_charging_station/home/root/chargingStation/configurations/configuration.json");
 
+//
         ScheduledExecutorService scheduled_service = Executors.newScheduledThreadPool(7 + ConfigsFile.mode3_controller_addresses.size());
 
         // CHARGE_POINT_INITIALIZATION
@@ -68,13 +72,13 @@ public class Main {
         LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER, "ENERGY_METER_COUNTERS ARE STARTED");
 
         // GETTING AVAILABLE POWER OF THE BUILDING  kWT  (OUTER ENERGY_METER)
-        scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER, EnergyMeterKind.NON_BUILT_IN), 50, 600, TimeUnit.MILLISECONDS);
+        scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER, EnergyMeterKind.NON_BUILT_IN), 50, 650, TimeUnit.MILLISECONDS);
         // KICK OFF TRACKER FOR TRACKING CURRENT CHANGES
         scheduled_service.scheduleAtFixedRate(new PhaseCurrentChangesTracker(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER), 400, 500, TimeUnit.MILLISECONDS);
         // GETTING CONSUMING POWER BY THE SLOW_STATION  kWT  (INNER ENERGY_METER)
         for (String address : ConfigsFile.mode3_controller_addresses) {
             int embeddedEnMeterId = Integer.parseInt(address.substring(10));
-            scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(embeddedEnMeterId, EnergyMeterType.INNER_ENERGY_METER, EnergyMeterKind.BUILT_IN), 600, 600, TimeUnit.MILLISECONDS);
+            scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(embeddedEnMeterId, EnergyMeterType.INNER_ENERGY_METER, EnergyMeterKind.BUILT_IN), 0, 1500, TimeUnit.MILLISECONDS);
         }
 
         // OCPP_HANDLER_START
@@ -87,12 +91,9 @@ public class Main {
             var station = new SlowChargingStation(i + 1, embeddedEnMeterId, address, ConfigsFile.mode3_controller_port, ConfigsFile.connector_id
                     , ConfigsFile.rpc_server_address, ConfigsFile.rpc_server_port);
 
-            scheduled_service.schedule(new StationRunProcess(station, chargePointOcpp), 1500, TimeUnit.MILLISECONDS);
+            scheduled_service.schedule(new StationRunProcess(station, chargePointOcpp), 4000, TimeUnit.MILLISECONDS);
         }
 
 
     }
 }
-
-
-

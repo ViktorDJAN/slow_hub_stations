@@ -11,8 +11,8 @@ import java.util.Properties;
 
 public class LogConfiguration {
     private static final Properties properties = new Properties();
-//    private static final String DIRECTORY_PATH = "home/root/chargingStation/logger/" ;
-    private static final String DIRECTORY_PATH = "slow_charging_station/home/root/chargingStation/logger/" ;
+    private static final String DIRECTORY_PATH = "home/root/chargingStation/logger/" ;
+//    private static final String DIRECTORY_PATH = "slow_charging_station/home/root/chargingStation/logger/" ;
 
 
     // LogBack xml file location

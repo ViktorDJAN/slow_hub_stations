@@ -136,23 +136,24 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
 
                         TransactionInfo transactionInfo = new TransactionInfo(transactionId, transactionRequest);
                         TransactionsQueue.queue.addLast(transactionInfo);
+                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: NEW_TRANSACTION" + transactionInfo +"     :______________TRANSACTIONS:  " + TransactionsQueue.queue);
                         chargePointOcpp.sendTransactionEventRequest(transactionRequest);
-                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: TRANSACTION STARTED: " + TransactionsQueue.queue);
-                        ColorTuner.printGreenText("TRANSACTIONS   : " + TransactionsQueue.queue);
+                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: TRANSACTION STARTED:______________TRANSACTIONS:  " + TransactionsQueue.queue);
+
                     }
                     case 5 -> {
                         TransactionEventRequest request = RequestBuilder.buildLocalStopTransactionEventRequest();
                         ColorTuner.redBackgroundBlackText(request);
                         chargePointOcpp.sendStopTransactionRequest(request);
                         finishCertainTransaction(dto);
-                        ColorTuner.printGreenText("TRANSACTIONS   : " + TransactionsQueue.queue);
-                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: EV CHARGING IS COMPLETE!");
+
+                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: EV CHARGING IS COMPLETED!:______________TRANSACTIONS:  " + TransactionsQueue.queue);
 
                     }
                     case 6, 7 -> {
                         StatusNotificationRequest request = RequestBuilder.buildStatusNotificationRequest(ConnectorStatusEnumType.Faulted, dto.evseId(), dto.connectorId());
                         chargePointOcpp.sendStatusNotificationRequest(request);
-                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: EV CHARGING IS FAILED!");
+                        LoggerPrinter.logAndPrint(ColorKind.RED_TEXT, LoggerType.OCPP_LOGGER, "OCPP_PROXY_HANDLER: EV CHARGING IS FAILED!:______________TRANSACTIONS:   " + TransactionsQueue.queue);
                     }
                     default -> {
                         LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_YELLOW_TEXT, LoggerType.OCPP_LOGGER, "OCPP_HANDLER UNPROCESSED_COMMAND!: " + commandDto + " MAP_SIZE: " + ProxyQueue.queue.size());

@@ -62,7 +62,7 @@ public class RpcServer {
                 try {
                     readMessage((SocketChannel) aKey.channel());
                 } catch (RuntimeException e) {
-//                    aKey.cancel();
+                    aKey.cancel();
                     aKey.channel().close();
                     System.out.println("Execption " + e);
                 }

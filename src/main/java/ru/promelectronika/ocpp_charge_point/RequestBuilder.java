@@ -68,6 +68,7 @@ public class RequestBuilder {
 
     public static TransactionEventRequest buildLocalStopTransactionEventRequest() {
         if (TransactionsQueue.queue.peekFirst() == null) {
+
             ColorTuner.printBlackText("TransactionsQueue: " + TransactionsQueue.queue.peekFirst());
             return null;
         }

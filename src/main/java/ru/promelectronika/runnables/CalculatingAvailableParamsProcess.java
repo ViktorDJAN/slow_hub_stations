@@ -329,23 +329,30 @@ public class CalculatingAvailableParamsProcess implements Runnable {
         if (MeasurementsBase.map.get(energyCounterId) != null) {
             MeasurementDto dto = MeasurementsBase.map.get(energyCounterId);
             if ((dto.getVoltagePL1() > 198 && dto.getVoltagePL2() > 198 && dto.getVoltagePL3() > 198)) {
-                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-                        THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+                LogHandler.loggerMain.info(THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+
+                //                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
+//                        THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
 
                 return THREE_PHASE_NETWORK;
 
             } else if (dto.getVoltagePL1() >= 198 || dto.getVoltagePL2() >= 198 || dto.getVoltagePL3() >= 198) {
                 LogHandler.loggerMain.info(NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-                        NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+
+//                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
+//                        NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
 
                 return NetworkType.ONE_PHASE_NETWORK;
 
             } else if ((dto.getVoltagePL1() < 198 && dto.getVoltagePL2() < 198 || dto.getVoltagePL3() > 198)) {
-                LoggerPrinter.logAndPrint(ColorKind.RED_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER,
-                        "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
-                                + "L1: " + dto.getVoltagePL1() + " L2: " + dto.getVoltagePL2() +
-                                " L2:" + dto.getVoltagePL3() + "\n" + " " + UNDEFINED);
+                LogHandler.loggerMain.info("EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
+                        + "L1: " + dto.getVoltagePL1() + " L2: " + dto.getVoltagePL2() +
+                        " L2:" + dto.getVoltagePL3() + "\n" + " " + UNDEFINED);
+
+//                LoggerPrinter.logAndPrint(ColorKind.RED_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER,
+//                        "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
+//                                + "L1: " + dto.getVoltagePL1() + " L2: " + dto.getVoltagePL2() +
+//                                " L2:" + dto.getVoltagePL3() + "\n" + " " + UNDEFINED);
             }
         }
 
@@ -362,22 +369,28 @@ public class CalculatingAvailableParamsProcess implements Runnable {
 
             if (countPhaseLine == 1) {
                 LogHandler.loggerMain.info(NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
-                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-                        NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+//                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
+//                        NetworkType.ONE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
 
                 return NetworkType.ONE_PHASE_NETWORK;
 
             } else if (countPhaseLine == 2 || countPhaseLine == 3) {
-                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
-                        THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+                LogHandler.loggerMain.info(THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
+
+//                LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER,
+//                        THREE_PHASE_NETWORK + " energy_meter_ID: " + energyCounterId);
 
                 return THREE_PHASE_NETWORK;
 
             } else if ((dto.vL1() < 198 && dto.vL2() < 198 || dto.vL3() < 198)) {
-                LoggerPrinter.logAndPrint(ColorKind.RED_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER,
-                        "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
-                                + "L1: " + dto.vL1() + " L2: " + dto.vL2() +
-                                " L2:" + dto.vL3() + "\n" + " " + UNDEFINED);
+                LogHandler.loggerMain.info("EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
+                        + "L1: " + dto.vL1() + " L2: " + dto.vL2() +
+                        " L2:" + dto.vL3() + "\n" + " " + UNDEFINED);
+
+//                LoggerPrinter.logAndPrint(ColorKind.RED_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER,
+//                        "EN_METER_ID: " + enMeterId + " IMPOSSIBLE TO DEFINE NETWORK TYPE, LOW VOLTAGE: "
+//                                + "L1: " + dto.vL1() + " L2: " + dto.vL2() +
+//                                " L2:" + dto.vL3() + "\n" + " " + UNDEFINED);
             }
         }
 
@@ -393,7 +406,9 @@ public class CalculatingAvailableParamsProcess implements Runnable {
 //            System.out.println(enMeterId+" " +map + " ");
             if (!map.isEmpty()) {
                 if (!isAccumulated) {
-                    for (int i = 0; i < 100; i++) {
+
+                    for (int i = 0; i < 10; i++) {
+                        Thread.sleep(100);
                         if (map.get("vL1") > 0) {
                             double vl_1 = map.get("vL1");
                             accumulatingMap.put("vL1", vl_1);

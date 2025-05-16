@@ -1,0 +1,39 @@
+{
+    "vendor_name": "Promelectronika",
+    "cs_model": "SLOW_22_kWt",
+    "ocpp_server_address": "wss://ocpp.electro.cars/ws/X22PMQEWF5FE",
+    "accessible_house_power": 20000.0,
+    "rpc_server_address": "192.168.3.200",
+    "rpc_server_port": 17000,
+    "embedded_en_meter_id": 1,
+    "outer_en_meter_id": 31,
+    "outer_en_meter_ip_address": "192.168.3.11",
+    "mode3_controller_port": 19000,
+    "connector_id": 1,
+    "logger_remote_address": "192.168.3.200",
+    "logger_remote_port": 30000,
+    "mode3_controller_addresses": [
+        "192.168.3.101",
+        "192.168.3.102"
+    ]
+}
+
+{
+    "vendor_name": "Promelectronika",
+    "cs_model": "SLOW_22_kWt",
+    "ocpp_server_address": "wss://ocpp.electro.cars/ws/X22PMQEWF5FE",
+    "accessible_house_power": 20000.0,
+    "rpc_server_address": "192.168.3.200",
+    "rpc_server_port": 17000,
+    "embedded_en_meter_id": 1,
+    "outer_en_meter_id": 31,
+    "outer_en_meter_ip_address": "192.168.3.11",
+    "mode3_controller_port": 19000,
+    "connector_id": 1,
+    "logger_remote_address": "192.168.3.200",
+    "logger_remote_port": 30000,
+    "mode3_controller_addresses": [
+        "192.168.3.101",
+        "192.168.3.102"
+    ]
+}
