@@ -38,23 +38,28 @@ public class Main {
 
     public static void main(String[] args) throws IOException, JoranException, InterruptedException {
 
-//                  INITIALIZATION
+
+//
+//
+//        // INITIALIZATION
         LoggerPrinter.turnOnLogConfigurator(true);
         LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER, "PROGRAM STARTED IN MAIN");
-//         CONFIGURATIONS READING
+//        // CONFIGURATIONS READING
         ConfigsFile.setConfigsBasedOnJSONFile("/home/root/chargingStation/configurations/configuration.json");
 //        ConfigsFile.setConfigsBasedOnJSONFile("slow_charging_station/home/root/chargingStation/configurations/configuration.json");
 
         //         ** HTTP **
         ServerHttp.startHttpServer("192.168.3.200", 3060);
         LoggerPrinter.logAndPrint(ColorKind.PURPLE_BG_BLACK_TEXT, LoggerType.MAIN_LOGGER, "Http Started..." + ServerHttp.getServer().getAddress());
+
+
         ScheduledExecutorService scheduled_service = Executors.newScheduledThreadPool(8 + ConfigsFile.mode3_controller_addresses.size());
+
 
         // CHARGE_POINT_INITIALIZATION
         var chargePointOcpp = new ChargePointOcpp(ConfigsFile.ocpp_server_address);
         OcppOperation.setChargePointOcpp(chargePointOcpp);
         scheduled_service.scheduleAtFixedRate(chargePointOcpp::connect, 20, 3000, TimeUnit.MILLISECONDS);
-
         // MODBUS DEVICES INITIALIZATION
         ModbusMaster master2 = DeviceModbus.initialModbusMasterTCP(ConfigsFile.outer_en_meter_ip_address);
         var outerEnMeter = new ThreePhaseEnergyMeter(ConfigsFile.outer_en_meter_id, master2, ConfigsFile.outer_en_meter_ip_address);
@@ -64,35 +69,35 @@ public class Main {
         rpcServer = new RpcServer(ConfigsFile.rpc_server_address, ConfigsFile.rpc_server_port);
         scheduled_service.scheduleAtFixedRate(new ServerStarter(rpcServer), 20, 5000, TimeUnit.MILLISECONDS);
 
+
         // KICK OFF ENERGY_METERS CALCULATING
         EnergyMeterProcess.createProcess(energyMeters, true, true);
         LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.MAIN_LOGGER, "ENERGY_METER_COUNTERS ARE STARTED");
 
         // GETTING AVAILABLE POWER OF THE BUILDING  kWT  (OUTER ENERGY_METER)
         scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER, EnergyMeterKind.NON_BUILT_IN), 20, 650, TimeUnit.MILLISECONDS);
-
         // KICK OFF TRACKER FOR TRACKING CURRENT CHANGES
         scheduled_service.scheduleAtFixedRate(new PhaseCurrentChangesTracker(ConfigsFile.outer_en_meter_id, EnergyMeterType.OUTER_ENERGY_METER), 400, 500, TimeUnit.MILLISECONDS);
-
-        // GETTING CONSUMING POWER BY THE SLOW_STATION  kWT  (INNER ENERGY_METER)
-        for (String address : ConfigsFile.mode3_controller_addresses) {
-            int embeddedEnMeterId = Integer.parseInt(address.substring(10));
-            scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(embeddedEnMeterId, EnergyMeterType.INNER_ENERGY_METER, EnergyMeterKind.BUILT_IN), 20, 1500, TimeUnit.MILLISECONDS);
-        }
 
         // OCPP_HANDLER_START
         scheduled_service.execute(new OcppProxyHandler(chargePointOcpp));
 
-        // START_CHARGING_CONTROLLERS
-        int stationId = 0;
+        // GETTING CONSUMING POWER BY THE SLOW_STATION  kWT  (INNER ENERGY_METER)
+        int count = 0;
         for (String address : ConfigsFile.mode3_controller_addresses) {
             int embeddedEnMeterId = Integer.parseInt(address.substring(10));
-            var station = new SlowChargingStation(++stationId, embeddedEnMeterId, address, ConfigsFile.mode3_controller_port, ConfigsFile.connector_id
+            scheduled_service.scheduleAtFixedRate(new CalculatingAvailableParamsProcess(embeddedEnMeterId, EnergyMeterType.INNER_ENERGY_METER, EnergyMeterKind.BUILT_IN), 20, 1500, TimeUnit.MILLISECONDS);
+
+            var station = new SlowChargingStation(++count, embeddedEnMeterId, address, ConfigsFile.mode3_controller_port, ConfigsFile.connector_id
                     , ConfigsFile.rpc_server_address, ConfigsFile.rpc_server_port);
-            LogHandler.loggerMain.info("STATION CREATED " + stationId + " : " + station);
+            LogHandler.loggerMain.info("STATION CREATED " + count + " : " + station + " " + address);
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-            service.execute(new StationRunProcess(station, chargePointOcpp));
+            service.schedule(new StationRunProcess(station, chargePointOcpp),2000, TimeUnit.MILLISECONDS);
         }
+
+
+
+
 
     }
 }
