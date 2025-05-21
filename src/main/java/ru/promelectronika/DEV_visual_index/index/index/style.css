@@ -22,7 +22,8 @@
     /*margin-bottom: 123px;*/
 
 }
-.header{
+
+.header {
     background: white;
 }
 
@@ -33,6 +34,12 @@
 }
 
 .sp_between {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 15%;
+    padding-left: 27%;
+}
+.sp_between2 {
     display: flex;
     justify-content: space-between;
     padding-right: 15%;
@@ -96,8 +103,8 @@ img {
 }
 
 
-
 input {
+    font-size: 1vw;
     width: 25vw;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -211,36 +218,3 @@ label {
 #logo {
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

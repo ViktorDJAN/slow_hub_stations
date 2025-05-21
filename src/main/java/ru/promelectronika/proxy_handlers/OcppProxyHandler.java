@@ -74,7 +74,7 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
     public void sendCommand(ProxyCommandDto dto) {
         BooleanSupplier isDtoNotNull = () -> dto != null;
         if (isDtoNotNull.getAsBoolean()) {
-            ProxyQueue.queue.addLast(dto);
+              ProxyQueue.queue.addLast(dto);
             LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_YELLOW_TEXT, LoggerType.OCPP_LOGGER, "OCPP_HANDLER SEND: " + dto + "MAP_SIZE: " + ProxyQueue.queue.size());
 
         }
