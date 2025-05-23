@@ -1,6 +1,6 @@
 package ru.promelectronika.dataBases;
 
-import lombok.Getter;
+
 import ru.promelectronika.dto.InnerEnMeterDto;
 
 import java.util.Hashtable;

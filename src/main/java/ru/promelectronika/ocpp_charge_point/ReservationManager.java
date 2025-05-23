@@ -1,6 +1,6 @@
 package ru.promelectronika.ocpp_charge_point;
 
-import lombok.Synchronized;
+
 import ru.promelectronika.logHandler.LogHandler;
 import ru.promelectronika.ocpp_charge_point.configuration.OcppConfigs;
 
@@ -12,8 +12,8 @@ import java.util.Properties;
 
 
 public class ReservationManager {
-    @Synchronized
-    public static Properties getReservationProperties(int reservationId) throws IOException {
+
+    public static synchronized Properties getReservationProperties(int reservationId) throws IOException {
         try (FileInputStream reservationFile = new FileInputStream(OcppConfigs.RESERVATIONS_DIRECTORY + reservationId)) {
             Properties reservationProperties = new Properties();
             reservationProperties.load(reservationFile);
@@ -23,8 +23,7 @@ public class ReservationManager {
         }
     }
 
-    @Synchronized
-    public static void setReservationProperties(Properties properties, int reservationId) {
+    public static synchronized void setReservationProperties(Properties properties, int reservationId) {
         try (FileOutputStream reservationFile = new FileOutputStream(OcppConfigs.RESERVATIONS_DIRECTORY + reservationId)) {
             properties.store(reservationFile, null);
         } catch (IOException e) {

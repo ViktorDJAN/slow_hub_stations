@@ -3,7 +3,7 @@ package ru.promelectronika.ocpp_charge_point;
 import eu.chargetime.ocpp.model.core_2_0_1.data_types.*;
 import eu.chargetime.ocpp.model.core_2_0_1.enumerations.*;
 import eu.chargetime.ocpp.model.core_2_0_1.messages.*;
-import lombok.Getter;
+
 import ru.promelectronika.util_stuff.ColorTuner;
 import ru.promelectronika.dto.records.MeterValuesDto;
 import ru.promelectronika.ocpp_charge_point.configuration.TransactionInfo;
@@ -12,7 +12,7 @@ import ru.promelectronika.queues.TransactionsQueue;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Getter
+
 public class RequestBuilder {
 
     public static BootNotificationRequest buildBootNotificationRequest(BootReasonEnumType reason, String model, String vendorName) {

@@ -4,16 +4,24 @@ package ru.promelectronika.ocpp_charge_point.featureProfiles.remoteTrigger;
 import eu.chargetime.ocpp.feature.profile.ClientRemoteTriggerEventHandler;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageConfirmation;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
-import lombok.Setter;
+
 import ru.promelectronika.logHandler.LogHandler;
 
 
-@Setter
+
 public class RemoteTriggerEventHandler implements ClientRemoteTriggerEventHandler {
 
     private TriggerConfirmationEvents triggerConfirmationEvents;
 
     public RemoteTriggerEventHandler(TriggerConfirmationEvents triggerConfirmationEvents) {
+        this.triggerConfirmationEvents = triggerConfirmationEvents;
+    }
+
+    public TriggerConfirmationEvents getTriggerConfirmationEvents() {
+        return triggerConfirmationEvents;
+    }
+
+    public void setTriggerConfirmationEvents(TriggerConfirmationEvents triggerConfirmationEvents) {
         this.triggerConfirmationEvents = triggerConfirmationEvents;
     }
 

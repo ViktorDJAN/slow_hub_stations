@@ -1,7 +1,7 @@
 package ru.promelectronika.rpcClientServer;
 
 
-import lombok.Getter;
+
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
@@ -21,7 +21,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-@Getter
+
 public class RpcClient implements Controller {
     private final Socket socket;
     public static final RpcClient NULL_RPC_CLIENT = new RpcClient(0);
@@ -30,7 +30,6 @@ public class RpcClient implements Controller {
     private DataOutputStream outputStream = null;
     private DataInputStream inputStream = null;
     private final byte[] buffer = new byte[2048];
-    @Getter
     private final int connectorId;
 
 
@@ -222,5 +221,49 @@ public class RpcClient implements Controller {
     @Override
     public String getName() {
         return null;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public int getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(int msgId) {
+        this.msgId = msgId;
+    }
+
+    public List<Integer> getWaitingAnswer() {
+        return waitingAnswer;
+    }
+
+    public void setWaitingAnswer(List<Integer> waitingAnswer) {
+        this.waitingAnswer = waitingAnswer;
+    }
+
+    public DataOutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    public void setOutputStream(DataOutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
+
+    public DataInputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(DataInputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public byte[] getBuffer() {
+        return buffer;
+    }
+
+    public int getConnectorId() {
+        return connectorId;
     }
 }

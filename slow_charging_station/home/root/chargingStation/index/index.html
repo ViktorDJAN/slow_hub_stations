@@ -48,12 +48,6 @@
             padding-right: 15%;
             padding-left: 27%;
         }
-        .sp_between2 {
-            display: flex;
-            justify-content: space-between;
-            padding-right: 15%;
-            padding-left: 27%;
-        }
 
         .sp_around {
             display: flex;
@@ -228,41 +222,16 @@
 
         }
     </style>
-
 </head>
-
 <body>
 <div class="container">
     <div class="header center">
-        <img id="logo"
-             src="data:image/png;base64,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"
-             alt="logotype">
+        <img id="logo" src="data:image/png;base64,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" alt="logotype">
     </div>
 
     <div class="main_part ">
         <div class="header_main center">
             <h1 class="headerH1">Настройки параметров станции заряда</h1>
-        </div>
-        <div class="wifi_params">
-            <p class="row_p_type_1">Введите параметры сети WI-FI</p>
-            <form id="wifi_form_id" action="">
-                <div class="sp_between2">
-                    <label for="wifi_network_id">Название сети WI-FI: </label>
-                    <input type="text" id="wifi_network_id" name="wifi_network" placeholder="network_wifi"
-                           maxlength="30">
-                </div>
-                <div class="sp_between2">
-                    <label for="wifi_password_id">Пароль к сети WI-FI: </label>
-                    <input type="text" id="wifi_password_id" name="wifi_password" placeholder="password" maxlength="30">
-                </div>
-
-                <div class="center">
-                    <button id="save_wifi_params_btn_id" class="button_type_1" form="wifi_form_id">Сохранить</button>
-                </div>
-
-            </form>
-
-
         </div>
 
         <div class="props_group">
@@ -353,7 +322,6 @@
             <div class="button_group">
                 <button id="add_ip_btn" class="button_type_1"> Добавить адрес</button>
                 <button id="saves_params_btn" class="button_type_1" form="form_id">Сохранить параметры</button>
-                <button id="reboot_btn_id" class="button_type_1" >Перезагрузить</button>
             </div>
 
         </div>
@@ -393,10 +361,7 @@
     let connector_id_input_el = document.getElementById("connector_id");
     let logger_remote_address_input_el = document.getElementById("logger_remote_address");
     let logger_remote_port_input_el = document.getElementById("logger_remote_port");
-    //wifi params
-    let connection_wifi_id_input_el = document.getElementById("wifi_network_id");
-    let password_wifi_id_input_el = document.getElementById("wifi_password_id");
-    let save_wifi_params_btn_el = document.getElementById("save_wifi_params_btn_id");
+
     let ip_addresses_list = [];
 
 
@@ -404,11 +369,8 @@
     // HTML SELECTED ELEMENTS
     let add_address_btn_el = document.getElementById("add_ip_btn");
     let save_params_btn_el = document.getElementById("saves_params_btn");
-    let reboot_btn_el = document.getElementById("reboot_btn_id");
-
     let configs_form_el = document.querySelector(".configs_form");
     let props_group_el = document.querySelector(".props_group");
-
 
     const gatherParamsInDto = () => {
         const list = [];
@@ -441,60 +403,14 @@
 
     //sending data to java
     function postParamsToJava() {
-        let params = gatherParamsInDto();
-        let counter = 0;
-        for (let i = 0; i < Object.keys(params).length; i++) {
-            if ((Object.values(params)[i].length === 0)) {
-                counter++;
-            }
-        }
-        if (Object.values(params)[13] instanceof Array) {
-            let array = Object.values(params)[13];
-            for (let i = 0; i < array.length; i++) {
-                if (array[i].length === 0) {
-                    counter++;
-                }
-            }
-            if (counter === 0) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://192.168.3.200:3060/postDataToJava", false);
-                xhr.setRequestHeader('Content-Type', 'text/plain');
-                xhr.send(JSON.stringify(gatherParamsInDto()));
-                alert("Для применения параметров требуется перезагрузка системы")
-            } else {
-                alert("Все поля должны быть заполнены!")
-            }
-        }
-    }
-
-    function postWifiParamsToJava() {
-        let params = gatherWifiParams();
-        if (params.wifi_password.length > 0 && params.wifi_networkName.length > 0) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://192.168.3.200:3060/postWifiParamsToJava", false);
-            xhr.setRequestHeader('Content-Type', 'text/plain');
-            xhr.send(JSON.stringify(params));
-            alert("Для применения параметров требуется перезагрузка системы")
-        } else {
-            alert("Все поля параметров сети должны быть заполнены!");
-        }
-
-    }
-
-    function postReboot() {
-        alert("Перезагрузка системы через 5 секунд")
+        gatherParamsInDto();
+        alert("Сохранение параметров,перезагрузка будет через 5 секунд")
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://192.168.3.200:3060/reboot", false);
+        xhr.open("POST", "http://192.168.3.200:3060/postDataToJava", false);
         xhr.setRequestHeader('Content-Type', 'text/plain');
-        xhr.send("REBOOT");
+        xhr.send(JSON.stringify(gatherParamsInDto()));
     }
 
-    const gatherWifiParams = () => {
-        return {
-            wifi_networkName: connection_wifi_id_input_el.value,
-            wifi_password: password_wifi_id_input_el.value
-        };
-    }
 
 
     //todo FOR RENDERING!!!!
@@ -510,17 +426,20 @@
         new_input_elem.id = "mode3_controller_address" + counter;
         new_input_elem.name = "mode3_controller_address" + counter;
         new_input_elem.placeholder = "192.168.3.200";
-        new_input_elem.maxLength = 13;
+        new_input_elem.maxLength=13;
 
         const new_label_elem = document.createElement("label");
+        // new_label_elem.id = "ip_input" +counter;
         new_label_elem.htmlFor = "mode3_controller_address" + counter;
         new_label_elem.textContent = "IP адрес:"
+
 
         new_div_elem.appendChild(new_label_elem);
         new_div_elem.appendChild(new_input_elem);
         configs_form_el.appendChild(new_div_elem);
 
         console.log("added" + counter)
+
     }
 
     const handleClick = () => {
@@ -529,8 +448,9 @@
 
     add_address_btn_el.addEventListener('click', handleClick)
     save_params_btn_el.addEventListener('click', postParamsToJava)
-    save_wifi_params_btn_el.addEventListener('click', postWifiParamsToJava)
-    reboot_btn_el.addEventListener("click", postReboot)
+
+
+
 </script>
 
 

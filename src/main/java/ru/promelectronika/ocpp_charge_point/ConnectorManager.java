@@ -1,6 +1,6 @@
 package ru.promelectronika.ocpp_charge_point;
 
-import lombok.Synchronized;
+
 import ru.promelectronika.logHandler.LogHandler;
 import ru.promelectronika.ocpp_charge_point.configuration.OcppConfigs;
 
@@ -13,8 +13,8 @@ import java.util.Properties;
 
 public class ConnectorManager {
 
-    @Synchronized
-    public static Properties getConnectorProperties(int connectorId) throws IOException {
+
+    public static synchronized Properties getConnectorProperties(int connectorId) throws IOException {
         try (FileInputStream connectorFile = new FileInputStream(OcppConfigs.CONNECTORS_DIRECTORY + connectorId)) {
             Properties connectorProperties = new Properties();
              connectorProperties.load(connectorFile);
@@ -24,8 +24,8 @@ public class ConnectorManager {
         }
     }
 
-    @Synchronized
-    public static void setConnectorProperties(Properties properties, int connectorId) {
+
+    public static synchronized void setConnectorProperties(Properties properties, int connectorId) {
         try (FileOutputStream connectorFile = new FileOutputStream(OcppConfigs.CONNECTORS_DIRECTORY + connectorId)) {
             properties.store(connectorFile, null); //
         } catch (IOException e) {

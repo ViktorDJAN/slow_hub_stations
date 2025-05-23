@@ -1,11 +1,17 @@
 package ru.promelectronika.ocpp_charge_point;
 
 
-import lombok.Getter;
-import lombok.Setter;
 
 
 public class OcppOperation {
-    @Getter @Setter
+
     private static ChargePointOcpp chargePointOcpp ;
+
+    public static ChargePointOcpp getChargePointOcpp() {
+        return chargePointOcpp;
+    }
+
+    public static void setChargePointOcpp(ChargePointOcpp chargePointOcpp) {
+        OcppOperation.chargePointOcpp = chargePointOcpp;
+    }
 }

@@ -1,9 +1,7 @@
 package ru.promelectronika.enums;
 
 
-import lombok.Getter;
 
-@Getter
 public enum ProxyCommandsEnumType {
     // For Rpc Controller commands
     DISCONNECTED(0),
@@ -14,7 +12,6 @@ public enum ProxyCommandsEnumType {
     STOP(5),
     ERROR(6),
     FAULT(7),
-
     // For initialization
     AVAILABLE_STATE(100),// it is not from protocol RPC
 
@@ -26,6 +23,10 @@ public enum ProxyCommandsEnumType {
     // STATION_HANDLER commands
     METER_VALUES_TRANSFER(22),
     EMERGENCY_BUTTON_PRESSED(23);
+
+    public int getValue() {
+        return value;
+    }
 
     private final int value;
 

@@ -1,6 +1,6 @@
 package ru.promelectronika.proxy_handlers;
 
-import lombok.Getter;
+
 import ru.promelectronika.logHandler.LogHandler;
 import ru.promelectronika.ocpp_charge_point.configuration.TransactionInfo;
 import ru.promelectronika.util_stuff.ColorKind;
@@ -27,7 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-@Getter
+
 public class StationProxyHandler extends AbstractProxyHandler implements Runnable {
     private final long terminationInterval = 30_000;
     private final SlowChargingStation station;
@@ -59,10 +59,11 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
         initializePowerOnControllerState();
         scheduledExecutorService3.scheduleAtFixedRate(()->{
             processReceivedCommand(receiveCommand());
-        },0, 150, TimeUnit.MILLISECONDS);
+
+        },0, 400, TimeUnit.MILLISECONDS);
         scheduledExecutorService2.scheduleAtFixedRate(()->{
             sendCommand(checkControllerStateChanges());
-        },0, 900, TimeUnit.MILLISECONDS);
+        },0, 50, TimeUnit.MILLISECONDS);
 
 
     }
@@ -169,7 +170,7 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
 
     public void startCharging(Integer evseId) throws InterruptedException {
         if (!TransactionsQueue.queue.isEmpty()) {
-            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": STATION_PROXY_HANDLER: startCharging(): TRANSACTION_QUEUE IS NOT EMPTY" + TransactionsQueue.queue);
+            LoggerPrinter.logAndPrint(ColorKind.BLACK_TEXT, LoggerType.MODE3_LOGGER, stationHandlerID + ": ___________________________STATION_PROXY_HANDLER: startCharging(): TRANSACTION_QUEUE IS NOT EMPTY" + TransactionsQueue.queue);
 
             for (TransactionInfo info : TransactionsQueue.queue) {
                 if (info.getRequest().getEvse().getId().equals(evseId) && info.isStarted()) {
@@ -323,5 +324,77 @@ public class StationProxyHandler extends AbstractProxyHandler implements Runnabl
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public long getTerminationInterval() {
+        return terminationInterval;
+    }
+
+    public SlowChargingStation getStation() {
+        return station;
+    }
+
+    public int getConnectorPreviousState() {
+        return connectorPreviousState;
+    }
+
+    public void setConnectorPreviousState(int connectorPreviousState) {
+        this.connectorPreviousState = connectorPreviousState;
+    }
+
+    public int getConnectorCurrentState() {
+        return connectorCurrentState;
+    }
+
+    public void setConnectorCurrentState(int connectorCurrentState) {
+        this.connectorCurrentState = connectorCurrentState;
+    }
+
+    public ScheduledExecutorService getScheduledExecutorService() {
+        return scheduledExecutorService;
+    }
+
+    public ScheduledExecutorService getScheduledExecutorService2() {
+        return scheduledExecutorService2;
+    }
+
+    public ScheduledExecutorService getScheduledExecutorService3() {
+        return scheduledExecutorService3;
+    }
+
+    public ScheduledExecutorService getScheduledExecutorService4() {
+        return scheduledExecutorService4;
+    }
+
+    public ScheduledFuture<?> getSendMetersValueFuture() {
+        return sendMetersValueFuture;
+    }
+
+    public void setSendMetersValueFuture(ScheduledFuture<?> sendMetersValueFuture) {
+        this.sendMetersValueFuture = sendMetersValueFuture;
+    }
+
+    public ScheduledFuture<?> getSendRpcSetLimitFuture() {
+        return sendRpcSetLimitFuture;
+    }
+
+    public void setSendRpcSetLimitFuture(ScheduledFuture<?> sendRpcSetLimitFuture) {
+        this.sendRpcSetLimitFuture = sendRpcSetLimitFuture;
+    }
+
+    public BooleanSupplier getIsMeterValueFutureAlive() {
+        return isMeterValueFutureAlive;
+    }
+
+    public BooleanSupplier getIsSendRpcSetLimitFutureAlive() {
+        return isSendRpcSetLimitFutureAlive;
+    }
+
+    public BooleanSupplier getIsTransactionInQueue() {
+        return isTransactionInQueue;
+    }
+
+    public Integer getStationHandlerID() {
+        return stationHandlerID;
     }
 }

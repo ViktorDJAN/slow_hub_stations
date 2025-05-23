@@ -7,7 +7,7 @@ import eu.chargetime.ocpp.model.core_2_0_1.enumerations.TransactionEventEnumType
 import eu.chargetime.ocpp.model.core_2_0_1.enumerations.TriggerReasonEnumType;
 import eu.chargetime.ocpp.model.core_2_0_1.messages.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core_2_0_1.messages.TransactionEventRequest;
-import lombok.Getter;
+
 import ru.promelectronika.util_stuff.ColorKind;
 import ru.promelectronika.util_stuff.ColorTuner;
 import ru.promelectronika.util_stuff.LoggerPrinter;
@@ -23,14 +23,35 @@ import ru.promelectronika.ocpp_charge_point.RequestBuilder;
 import ru.promelectronika.ocpp_charge_point.configuration.TransactionInfo;
 import ru.promelectronika.queues.TransactionsQueue;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-@Getter
+
 public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
     private final ChargePointOcpp chargePointOcpp;
     private int transactionIDsCounter = 0;
     int messageCounter = 0;
 
+    public ChargePointOcpp getChargePointOcpp() {
+        return chargePointOcpp;
+    }
+
+    public int getTransactionIDsCounter() {
+        return transactionIDsCounter;
+    }
+
+    public void setTransactionIDsCounter(int transactionIDsCounter) {
+        this.transactionIDsCounter = transactionIDsCounter;
+    }
+
+    public int getMessageCounter() {
+        return messageCounter;
+    }
+
+    public void setMessageCounter(int messageCounter) {
+        this.messageCounter = messageCounter;
+    }
 
     public OcppProxyHandler(ChargePointOcpp chargePointOcpp) {
         this.chargePointOcpp = chargePointOcpp;
@@ -39,16 +60,18 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
     @Override
     public void run() {
 
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
+                ()->{
+                    try {
+                        checkConnectionLose();
+                        ProxyCommandDto dto = receiveCommand();
+                        processCommand(dto);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                },0,10, TimeUnit.MILLISECONDS
+        );
 
-        while (true) {
-            try {
-                checkConnectionLose();
-                ProxyCommandDto dto = receiveCommand();
-                processCommand(dto);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
     }
 
@@ -74,7 +97,7 @@ public class OcppProxyHandler extends AbstractProxyHandler implements Runnable {
     public void sendCommand(ProxyCommandDto dto) {
         BooleanSupplier isDtoNotNull = () -> dto != null;
         if (isDtoNotNull.getAsBoolean()) {
-              ProxyQueue.queue.addLast(dto);
+            ProxyQueue.queue.addLast(dto);
             LoggerPrinter.logAndPrint(ColorKind.BLACK_BG_YELLOW_TEXT, LoggerType.OCPP_LOGGER, "OCPP_HANDLER SEND: " + dto + "MAP_SIZE: " + ProxyQueue.queue.size());
 
         }

@@ -1,7 +1,7 @@
 package ru.promelectronika.rpcClientServer;
 
 
-import lombok.Getter;
+
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
@@ -23,7 +23,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 
-@Getter
+
 public class RpcServer {
     private final Selector selector;
     private final ServerSocketChannel serverSocketChannel;
@@ -335,5 +335,35 @@ public class RpcServer {
         }
     }
 
+    public Selector getSelector() {
+        return selector;
+    }
 
+    public ServerSocketChannel getServerSocketChannel() {
+        return serverSocketChannel;
+    }
+
+    public SocketChannel getClient() {
+        return client;
+    }
+
+    public void setClient(SocketChannel client) {
+        this.client = client;
+    }
+
+    public SelectionKey getSelectKey() {
+        return selectKey;
+    }
+
+    public Map<String, Double> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Double> map) {
+        this.map = map;
+    }
+
+    public ByteBuffer getBuffer() {
+        return buffer;
+    }
 }

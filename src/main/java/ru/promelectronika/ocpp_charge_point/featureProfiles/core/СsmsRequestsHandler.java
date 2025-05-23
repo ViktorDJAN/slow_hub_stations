@@ -5,7 +5,7 @@ import eu.chargetime.ocpp.model.core.*;
 import eu.chargetime.ocpp.model.core_2_0_1.messages.*;
 import eu.chargetime.ocpp.model.core_2_0_1.messages.ChangeAvailabilityRequest;
 import eu.chargetime.ocpp.model.core_2_0_1.messages.UnlockConnectorRequest;
-import lombok.Setter;
+
 import ru.promelectronika.ocpp_charge_point.ChargePointOcpp;
 
 import ru.promelectronika.logHandler.LogHandler;
@@ -20,7 +20,7 @@ import ru.promelectronika.ocpp_charge_point.featureProfiles.core.csms_requests_h
 // Implements all possible events for each of them we should compound requests !!!
 // That class process requests gotten from central system and sends it back
 @SuppressWarnings("NonAsciiCharacters")
-@Setter
+
 public class СsmsRequestsHandler implements ClientCoreEventHandler {
 
     private ChargePointOcpp chargePointOcpp;
@@ -29,6 +29,13 @@ public class СsmsRequestsHandler implements ClientCoreEventHandler {
         this.chargePointOcpp = chargePointOcpp;
     }
 
+    public ChargePointOcpp getChargePointOcpp() {
+        return chargePointOcpp;
+    }
+
+    public void setChargePointOcpp(ChargePointOcpp chargePointOcpp) {
+        this.chargePointOcpp = chargePointOcpp;
+    }
 
     @Override
     public ChangeAvailabilityResponse handleChangeAvailabilityRequest(ChangeAvailabilityRequest request) {

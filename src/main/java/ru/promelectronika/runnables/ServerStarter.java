@@ -1,15 +1,19 @@
 package ru.promelectronika.runnables;
 
 
-import lombok.Getter;
+
 import ru.promelectronika.util_stuff.ColorKind;
 import ru.promelectronika.util_stuff.LoggerPrinter;
 import ru.promelectronika.enums.LoggerType;
 import ru.promelectronika.rpcClientServer.RpcServer;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-@Getter
+
+
+
 public class ServerStarter implements Runnable {
     private final RpcServer server;
 
@@ -20,17 +24,18 @@ public class ServerStarter implements Runnable {
 
     @Override
     public void run() {
+
         try {
-            LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.RPC_SERVER_LOGGER, "RpcServer has started on" + server.getServerSocketChannel().getLocalAddress());
-            while (!Thread.interrupted()) {
-                server.start();
-
-
-            }
-
-        } catch (IOException  e) {
-            LoggerPrinter.logAndPrint(ColorKind.GREEN_BG_YELLOW_TEXT, LoggerType.RPC_SERVER_LOGGER, "SERVER_STARTER_GOT EXCEPTION" + e.getMessage());
-
+            server.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
+
+    }
+
+
+    public RpcServer getServer() {
+        return server;
     }
 }

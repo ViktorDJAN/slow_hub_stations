@@ -9,8 +9,7 @@ import eu.chargetime.ocpp.model.core_2_0_1.enumerations.*;
 import eu.chargetime.ocpp.model.core_2_0_1.messages.*;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageConfirmation;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
-import lombok.Getter;
-import lombok.Setter;
+
 import ru.promelectronika.ocpp_charge_point.configuration.JsonClientBuilder;
 import ru.promelectronika.ocpp_charge_point.featureProfiles.core.CoreOperationEvents;
 
@@ -24,8 +23,7 @@ import java.util.function.BooleanSupplier;
 
 
 @SuppressWarnings("NonAsciiCharacters")
-@Getter
-@Setter
+
 public class ChargePointOcpp implements CoreOperationEvents, TriggerConfirmationEvents {
     private IClientAPI client;
     private final ClientCoreProfile clientCoreProfile; // is a bunch of features (client requests)
@@ -129,5 +127,27 @@ public class ChargePointOcpp implements CoreOperationEvents, TriggerConfirmation
         return new TriggerMessage(request, this).getResponse();
     }
 
+    public IClientAPI getClient() {
+        return client;
+    }
 
+    public void setClient(IClientAPI client) {
+        this.client = client;
+    }
+
+    public ClientCoreProfile getClientCoreProfile() {
+        return clientCoreProfile;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
+
+    public String getServerAddress() {
+        return serverAddress;
+    }
 }

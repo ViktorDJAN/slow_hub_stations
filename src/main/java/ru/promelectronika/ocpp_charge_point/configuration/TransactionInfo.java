@@ -1,12 +1,10 @@
 package ru.promelectronika.ocpp_charge_point.configuration;
 
+
 import eu.chargetime.ocpp.model.core_2_0_1.messages.TransactionEventRequest;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Objects;
 
-@Getter @Setter
 public class TransactionInfo {
     public static int seqNo = 0;
     private final String transactionId;
@@ -22,6 +20,41 @@ public class TransactionInfo {
 
     }
 
+    public static int getSeqNo() {
+        return seqNo;
+    }
+
+    public static void setSeqNo(int seqNo) {
+        TransactionInfo.seqNo = seqNo;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public TransactionEventRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(TransactionEventRequest request) {
+        this.request = request;
+    }
+
+    public Integer getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(Integer remoteId) {
+        this.remoteId = remoteId;
+    }
+
+    public boolean isStarted() {
+        return isStarted;
+    }
+
+    public void setStarted(boolean started) {
+        isStarted = started;
+    }
 
     @Override
     public boolean equals(Object o) {

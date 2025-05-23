@@ -1,9 +1,8 @@
 package ru.promelectronika.dto;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter @Setter
+
+
 public class ControllerParamsDto {
     //rpcPing
     private volatile int selfConnectionInputState;
@@ -19,9 +18,55 @@ public class ControllerParamsDto {
     private volatile int chargeState = 0;
     private volatile String chargeStateProtocolSpecific;
 
+    public int getSelfConnectionInputState() {
+        return selfConnectionInputState;
+    }
 
+    public void setSelfConnectionInputState(int selfConnectionInputState) {
+        this.selfConnectionInputState = selfConnectionInputState;
+    }
 
-    // For Logging
+    public int getSelfConnectionOutputState() {
+        return selfConnectionOutputState;
+    }
+
+    public void setSelfConnectionOutputState(int selfConnectionOutputState) {
+        this.selfConnectionOutputState = selfConnectionOutputState;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public int getChargeState() {
+        return chargeState;
+    }
+
+    public void setChargeState(int chargeState) {
+        this.chargeState = chargeState;
+    }
+
+    public String getChargeStateProtocolSpecific() {
+        return chargeStateProtocolSpecific;
+    }
+
+    public void setChargeStateProtocolSpecific(String chargeStateProtocolSpecific) {
+        this.chargeStateProtocolSpecific = chargeStateProtocolSpecific;
+    }
+
+// For Logging
 
     public String getRpcPing() {
         StringBuilder str = new StringBuilder();

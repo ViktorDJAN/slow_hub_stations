@@ -1,24 +1,24 @@
 package ru.promelectronika.rpcClientServer;
 
 
-import lombok.Getter;
-import lombok.Setter;
+
 import ru.promelectronika.util_stuff.ColorKind;
 import ru.promelectronika.util_stuff.ColorTuner;
 import ru.promelectronika.util_stuff.LoggerPrinter;
 import ru.promelectronika.dto.TransferredCurrent;
 import ru.promelectronika.enums.LoggerType;
 import ru.promelectronika.logHandler.LogHandler;
-@Getter
-@Setter
+
 public class Mode3Client extends RpcClient {
     private static final String INTERFACE_ID = "IID_SECC_MODE3_2.2U";
     private int countErrorMessage = 0;
     private int countSuccessMessage = 0;
     private boolean isConnected = false;
+    private final int connectorIdMode3;
 
     public Mode3Client(int connectorId) {
         super(connectorId);
+        connectorIdMode3 = connectorId;
     }
 
     /**
@@ -119,7 +119,7 @@ public class Mode3Client extends RpcClient {
         } catch (Throwable e) {
             LogHandler.logThrowableMode3(e);
         }
-        logMode3ClientData("rpcAuthorize");
+        logMode3ClientData("CONNECTOR_" +connectorIdMode3 + " + rpcAuthorize");
     }
 
     public void rpcUserStop() {
@@ -128,7 +128,7 @@ public class Mode3Client extends RpcClient {
         } catch (Throwable e) {
             LogHandler.logThrowableMode3(e);
         }
-        logMode3ClientData("rpcUserStop");
+        logMode3ClientData("CONNECTOR_" +connectorIdMode3 + " rpcUserStop");
     }
 
     public void rpcSetIp(String ip) {
@@ -164,5 +164,29 @@ public class Mode3Client extends RpcClient {
 
     public String getName() {
         return "mode3";
+    }
+
+    public int getCountErrorMessage() {
+        return countErrorMessage;
+    }
+
+    public void setCountErrorMessage(int countErrorMessage) {
+        this.countErrorMessage = countErrorMessage;
+    }
+
+    public int getCountSuccessMessage() {
+        return countSuccessMessage;
+    }
+
+    public void setCountSuccessMessage(int countSuccessMessage) {
+        this.countSuccessMessage = countSuccessMessage;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
     }
 }
